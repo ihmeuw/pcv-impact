@@ -22,7 +22,7 @@ do "$j/Usable/Tools/ADO/pdfmaker_Acrobat11.do"
 ** Files and directories
 
 ** code directory
-local codeDir "H:/local/pcv_impact/code/"
+local codeDir "H:/local/mixed-methods-analysis/pcv_impact/code/"
 if (c(os)=="Unix") local codeDir "./"
 
 ** data directory
@@ -36,7 +36,7 @@ local regOutFile "`dir'/output/ipd_regression_output.txt"
 log using "`regOutFile'", replace text
 
 ** output for graphs
-local graphOutFile "`dir'/output/ipd_graphs"
+local graphOutFile "`dir'/output/ipd_graphs_regression_interpolation"
 
 ** regression function
 local regFunction "`codeDir'/regression_function.do"
@@ -129,11 +129,11 @@ do "`graphFunction'" "IPDcases" "ipd" "PCV Introduction and IPD Cases" "All Case
 pdfappend
 
 ** graph PCV-10 only
-do "`graphFunction'" "PCV10VT" "pcv10" "PCV Introduction and IPD Cases" "Serotype 10" "4" "`introduction_end'" "`introduction_start'"
+do "`graphFunction'" "PCV10VT" "pcv10" "PCV Introduction and IPD Cases" "PCV10 Serotypes" "4" "`introduction_end'" "`introduction_start'"
 pdfappend
 
 ** graph IPD besides PCV10
-do "`graphFunction'" "not_pcv10" "pcv_other" "PCV Introduction and IPD Cases" "Serotypes other than 10" "3" "`introduction_end'" "`introduction_start'"
+do "`graphFunction'" "not_pcv10" "pcv_other" "PCV Introduction and IPD Cases" "Non-PCV10 Serotypes" "3" "`introduction_end'" "`introduction_start'"
 pdfappend
 
 ** close pdf
