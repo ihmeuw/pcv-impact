@@ -8,7 +8,13 @@ n dis "----------------"
 n dis "`y'"
 n dis "----------------"
 
+** leaving this here in case we want to go back to the "fully interacted" model (warning: graphing function breaks)
+* gen interaction1 = during_introduction*time_during_intervention
+* replace interaction1 = interaction1[_n-1] if post_introduction
+* gen interaction2 = post_introduction*time_since_inervention
+
 ** regress `stub'
+* if ("`strat'"=="") n nbreg `y' moyr interaction1 interaction2
 if ("`strat'"=="") n nbreg `y' moyr post_introduction
 if ("`strat'"!="") { 
 	gen interaction = post_introduction * `strat'
@@ -46,3 +52,6 @@ if (`interpolate') {
 gen `stub'_effect = exp(_b[post_introduction])
 gen `stub'_effect_upper = exp(_b[post_introduction]+1.96*_se[post_introduction])
 gen `stub'_effect_lower = exp(_b[post_introduction]-1.96*_se[post_introduction])
+
+** leaving this here in case we want to go back to the "fully interacted" model
+* drop interaction1 interaction2
