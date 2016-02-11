@@ -11,7 +11,7 @@ n dis "----------------"
 ** leaving this here in case we want to go back to the "fully interacted" model (warning: graphing function breaks)
 * gen interaction1 = during_introduction*time_during_intervention
 * replace interaction1 = interaction1[_n-1] if post_introduction
-* gen interaction2 = post_introduction*time_since_inervention
+* gen interaction2 = post_introduction*time_since_intervention
 
 ** regress `stub'
 * if ("`strat'"=="") n nbreg `y' moyr interaction1 interaction2

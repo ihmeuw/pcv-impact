@@ -77,8 +77,8 @@ gen post_introduction = moyr>`introduction_end'
 gen time_before_intervention = moyr
 gen time_during_intervention = moyr - `introduction_start'
 replace time_during_intervention = 0 if time_during_intervention<0
-gen time_since_inervention = moyr - `introduction_end'
-replace time_since_inervention = 0 if time_since_inervention<0
+gen time_since_intervention = moyr - `introduction_end'
+replace time_since_intervention = 0 if time_since_intervention<0
 ** ---------------------------------------------------------------------------------------------------------
 
 
