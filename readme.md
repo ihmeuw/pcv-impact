@@ -6,6 +6,15 @@
 
    Main code that executes full analysis
 
+2. prepData.r
+
+   Code that loads/preps data. 
+   Inputs:  
+   * dir - directory where data live
+  
+    Outputs:  
+   * data - all datasets in 'prepped' format (below)
+
 2. its.r
 
    Function that carries out interrupted time series analysis.  
@@ -16,7 +25,7 @@
    * cutpoint - date object containing the time point or points (up to 2) of intervention
    * slope    - logical. TRUE indicates that an interaction term (or terms) should be used to estimate a different slope before/after intervetion
    
-   Outputs:  
+   Outputs (in a list):  
    * data        - the input data object with six new columns: [varname]_pred, [varname]_pred_upper, [varname]_pred_lower, [varname]_cf, [varname]_cf_upper, [varname]_cf_lower,
    * effect size - a data frame containing the intercept shift associated with intervention, including uncertainty
    * gof         - goodness of fit based on BIC
@@ -31,7 +40,7 @@
    * cutpoint - date vector or matrix (up to 2 columns) containing the time points of intervention to include in BMA
    * slope    - logical. TRUE indicates that an interaction term (or terms) should be used to estimate a different slope before/after intervetion
    
-   Outputs:  
+   Outputs (in a list):  
    * data        - the input data object with six new columns: [varname]_pred, [varname]_pred_upper, [varname]_pred_lower, [varname]_cf, [varname]_cf_upper, [varname]_cf_lower,
    * effect size - a data frame containing the intercept shift associated with intervention, including uncertainty
 
@@ -45,7 +54,7 @@
    * cutpoint - date vector or matrix (up to 2 columns) containing the time points of intervention to include in BMA
    * slope    - logical. TRUE indicates that an interaction term (or terms) should be used to estimate a different slope before/after intervetion
    
-   Outputs:  
+   Outputs (in a list):  
    * data        - the input data object with six new columns: [varname]_pred, [varname]_pred_upper, [varname]_pred_lower, [varname]_cf, [varname]_cf_upper, [varname]_cf_lower,
    * effect size - a data frame containing the intercept shift associated with intervention, including uncertainty
 
@@ -55,9 +64,10 @@
    Inputs:  
    * data     - data table object in 'output' format (see below)
    * outcome  - character. name of the outcome variable
-   * varname  - character. name name of the variables that the function should return (prediction, uncertainty, effect size)
-   * cutpoint - date vector or matrix (up to 2 columns) containing the time points of intervention to include in BMA
-   * slope    - logical. TRUE indicates that an interaction term (or terms) should be used to estimate a different slope before/after intervetion
+   * title
+   * xlab
+   * ylab
+   * annotation
    
    Outputs:  
    * p - a ggplot graph
