@@ -11,10 +11,13 @@
 rm(list=ls())
 library(data.table)
 library(readxl)
+library(MASS)
+library(stats4)
+library(ggplot2)
 # ------------------
 
 
-# ----------------------------------------------------------
+# -----------------------------------------------------------
 # Files, directories and settings
 
 # change to code directory
@@ -33,7 +36,11 @@ root = 'J:/Project/Evaluation/GAVI/Mozambique/pcv_impact/'
 
 # graph file
 graphFile = paste0(root, 'output/pcv_impact.pdf')
-# ----------------------------------------------------------
+
+# list of outcome variables
+outcomes = c('ipd_cases', 'ipd_pcv10_serotype_cases', 
+				'ipd_non_pcv10_serotype_cases', 'xrcp_cases')
+# -----------------------------------------------------------
 
 
 # ------------------------------------
@@ -42,9 +49,18 @@ data = prepData(paste0(root, 'data'))
 # ------------------------------------
 
 
-# -----------------------------------------------
+# -------------------------------------------------------------------------------------------------------------------
 # Execute analysis
-# -----------------------------------------------
+
+# basic ITS
+cutpoints = as.Date(c('010413', '010114'), '%d%m%y')
+itsResults = vector('list', length(outcomes)) 
+for(o in seq(length(outcomes))) {
+	itsResults[[o]] = its(data=data, outcome=outcomes[o], cutpoint=cutpoints, slope=FALSE)
+}
+
+# full BMS
+# -------------------------------------------------------------------------------------------------------------------
 
 
 # -----------------------------------------------

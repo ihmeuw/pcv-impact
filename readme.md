@@ -21,12 +21,11 @@
    Inputs:  
    * data     - data table object in 'prepped' format (see below)
    * outcome  - character. name of the outcome variable
-   * varname  - character. name name of the variables that the function should return (prediction, uncertainty, effect size)
    * cutpoint - date object containing the time point or points (up to 2) of intervention
    * slope    - logical. TRUE indicates that an interaction term (or terms) should be used to estimate a different slope before/after intervetion
    
    Outputs (in a list):  
-   * data        - the input data object with six new columns: [varname]_pred, [varname]_pred_upper, [varname]_pred_lower, [varname]_cf, [varname]_cf_upper, [varname]_cf_lower,
+   * data        - the input data object with six new columns: [outcome]_pred, [outcome]_pred_upper, [outcome]_pred_lower, [outcome]_cf, [outcome]_cf_upper, [outcome]_cf_lower,
    * effect size - a data frame containing the intercept shift associated with intervention, including uncertainty
    * gof         - goodness of fit based on BIC
 
@@ -36,12 +35,11 @@
    Inputs:  
    * data     - data table object in 'prepped' format (see below)
    * outcome  - character. name of the outcome variable
-   * varname  - character. name name of the variables that the function should return (prediction, uncertainty, effect size)
    * cutpoint - date vector or matrix (up to 2 columns) containing the time points of intervention to include in BMA
    * slope    - logical. TRUE indicates that an interaction term (or terms) should be used to estimate a different slope before/after intervetion
    
    Outputs (in a list):  
-   * data        - the input data object with six new columns: [varname]_pred, [varname]_pred_upper, [varname]_pred_lower, [varname]_cf, [varname]_cf_upper, [varname]_cf_lower,
+   * data        - the input data object with six new columns: [outcome]_pred, [outcome]_pred_upper, [outcome]_pred_lower, [outcome]_cf, [outcome]_cf_upper, [outcome]_cf_lower,
    * effect size - a data frame containing the intercept shift associated with intervention, including uncertainty
 
 4. cpbma.r
@@ -50,12 +48,11 @@
    Inputs:  
    * data     - data table object in 'prepped' format (see below)
    * outcome  - character. name of the outcome variable
-   * varname  - character. name name of the variables that the function should return (prediction, uncertainty, effect size)
    * cutpoint - date vector or matrix (up to 2 columns) containing the time points of intervention to include in BMA
    * slope    - logical. TRUE indicates that an interaction term (or terms) should be used to estimate a different slope before/after intervetion
    
    Outputs (in a list):  
-   * data        - the input data object with six new columns: [varname]_pred, [varname]_pred_upper, [varname]_pred_lower, [varname]_cf, [varname]_cf_upper, [varname]_cf_lower,
+   * data        - the input data object with six new columns: [outcome]_pred, [outcome]_pred_upper, [outcome]_pred_lower, [outcome]_cf, [outcome]_cf_upper, [outcome]_cf_lower,
    * effect size - a data frame containing the intercept shift associated with intervention, including uncertainty
 
 5. graph.r
