@@ -26,6 +26,8 @@
    
    Outputs (in a list):  
    * data        - the input data object with six new columns: [outcome]_pred, [outcome]_pred_upper, [outcome]_pred_lower, [outcome]_cf, [outcome]_cf_upper, [outcome]_cf_lower,
+   * outcome  - character. name of the outcome variable
+   * cutpoint - date object containing the time point or points (up to 2) of intervention
    * effect size - a data frame containing the intercept shift associated with intervention, including uncertainty
    * gof         - goodness of fit based on BIC
 
@@ -57,14 +59,9 @@
 
 5. graph.r
 
-	Function that produces a time series graph from the results of its.r, bma.r or cpbma.r.
+   Function that produces a time series graph from the results of its.r, bma.r or cpbma.r.
    Inputs:  
-   * data     - data table object in 'output' format (see below)
-   * outcome  - character. name of the outcome variable
-   * title
-   * xlab
-   * ylab
-   * annotation
+   * itsOutput - list. standard output from its.r
    
    Outputs:  
    * p - a ggplot graph

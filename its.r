@@ -11,6 +11,8 @@
 
 # Outputs (in a list):  
 # * data        - the input data object with six new columns: [outcome]_pred, [outcome]_pred_upper, [outcome]_pred_lower, [outcome]_cf, [outcome]_cf_upper, [outcome]_cf_lower,
+# * outcome     - character. name of the outcome variable
+# * cutpoint    - date object containing the time point or points (up to 2) of intervention
 # * effect size - a data frame containing the intercept shift associated with intervention, including uncertainty
 # * gof         - goodness of fit based on BIC
 # ---------------------------------------------------------------------------------------------------------------------------------------------
@@ -25,6 +27,9 @@ its = function(data=NULL, outcome=NULL, cutpoint=NULL, slope=NULL) {
 	
 	# ------------------------------------------------------------------------------
 	# Handle inputs
+	
+	# make sure the input data object doesn't get inadvertently modified
+	data = copy(data)
 	
 	# test
 	for(arg in c('data', 'outcome', 'cutpoint', 'slope')) {
@@ -122,7 +127,7 @@ its = function(data=NULL, outcome=NULL, cutpoint=NULL, slope=NULL) {
 	# Store effect size and goodness of fit
 	
 	# effect size
-	effect_size = data.table('effect'=exp(cbind(coef(fit), confint(fit))['postInterventionTRUE',]))
+	effect_size = data.frame('effect'=exp(cbind(coef(fit), confint(fit))['postInterventionTRUE',]))
 	
 	# format effect size to be human readable
 	effect_size = round(effect_size*100, 1)
@@ -153,8 +158,9 @@ its = function(data=NULL, outcome=NULL, cutpoint=NULL, slope=NULL) {
 	# -------------------------------------------
 		
 	
-	# -------------------------------------------------------------
+	# --------------------------------------------------------------
 	# Return output
-	return(list('data'=data, 'effect_size'=effect_size, 'gof'=gof))
-	# -------------------------------------------------------------
+	return(list('data'=data, 'outcome'=outcome, 'cutpoint'=cutpoint, 
+					'effect_size'=effect_size, 'gof'=gof))
+	# --------------------------------------------------------------
 }
