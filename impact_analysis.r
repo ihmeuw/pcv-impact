@@ -29,7 +29,7 @@ source(paste0(codeDir, 'prepData.r'))
 source(paste0(codeDir, 'its.r'))
 # source(paste0(codeDir, 'bma.r'))
 # source(paste0(codeDir, 'cpbma.r'))
-# source(paste0(codeDir, 'graph.r'))
+source(paste0(codeDir, 'graph.r'))
 
 # root input/output directory
 root = 'J:/Project/Evaluation/GAVI/Mozambique/pcv_impact/'
@@ -43,24 +43,24 @@ outcomes = c('ipd_cases', 'ipd_pcv10_serotype_cases',
 # -----------------------------------------------------------
 
 
-# ------------------------------------
+# -----------------------------------
 # Load/prep data
-data = prepData(paste0(root, 'data'))
-# ------------------------------------
+inputData = prepData(paste0(root, 'data'))
+# -----------------------------------
 
 
-# -------------------------------------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------------
 # Execute analysis
 
 # basic ITS
 cutpoints = as.Date(c('010413', '010114'), '%d%m%y')
 itsResults = vector('list', length(outcomes)) 
 for(o in seq(length(outcomes))) {
-	itsResults[[o]] = its(data=data, outcome=outcomes[o], cutpoint=cutpoints, slope=FALSE)
+	itsResults[[o]] = its(data=inputData, outcome=outcomes[o], cutpoint=cutpoints, slope=FALSE)
 }
 
 # full BMS
-# -------------------------------------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------------
 
 
 # -----------------------------------------------
@@ -68,6 +68,15 @@ for(o in seq(length(outcomes))) {
 # -----------------------------------------------
 
 
-# -----------------------------------------------
+# ------------------------------------------------------------------------------
 # Graph
-# -----------------------------------------------
+
+# open pdf
+pdf(graphFile, height=6, width=10)
+
+# basic ITS
+for(o in seq(length(outcomes))) plot(graph(itsOutput=itsResults[[o]], quarterly=TRUE))
+
+# close pdf
+dev.off()
+# ------------------------------------------------------------------------------
