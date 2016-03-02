@@ -127,7 +127,7 @@ its = function(data=NULL, outcome=NULL, cutpoint=NULL, slope=NULL) {
 	# Store effect size and goodness of fit
 	
 	# effect size
-	effect_size = data.frame('effect'=exp(cbind(coef(fit), confint(fit))['postInterventionTRUE',]))
+	effect_size = data.table('effect'=exp(cbind(coef(fit), confint(fit))['postInterventionTRUE',]))
 	
 	# format effect size to be human readable
 	effect_size = round(effect_size*100, 1)
@@ -140,6 +140,7 @@ its = function(data=NULL, outcome=NULL, cutpoint=NULL, slope=NULL) {
 		effect_size[, effect:=effect-100]
 		effect_size[, estimate:=c('Estimate', 'Lower', 'Upper')]
 	}
+	effect_size = data.frame(effect_size)
 	
 	# GoF
 	gof = BIC(fit)
