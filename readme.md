@@ -35,13 +35,12 @@
 
    Function that carries out Bayesian model averaging over multiple interrupted time series analyses.  
    Inputs:  
-   * data     - data table object in 'prepped' format (see below)
-   * outcome  - character. name of the outcome variable
-   * cutpoint - date vector or matrix (up to 2 columns) containing the time points of intervention to include in BMA
-   * slope    - logical. TRUE indicates that an interaction term (or terms) should be used to estimate a different slope before/after intervetion
+   * itsResults - list of lists. standard output from multiple runs of its.r
    
    Outputs (in a list):  
    * data        - the input data object with six new columns: [outcome]_pred, [outcome]_pred_upper, [outcome]_pred_lower, [outcome]_cf, [outcome]_cf_upper, [outcome]_cf_lower,
+   * outcome     - character. name of the outcome variable
+   * cutpoint    - date object containing the time point or points (up to 2) of intervention
    * effect size - a data frame containing the intercept shift associated with intervention, including uncertainty
 
 4. cpbma.r

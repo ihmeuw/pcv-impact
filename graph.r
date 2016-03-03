@@ -41,6 +41,9 @@ graph = function(itsOutput=NULL, quarterly=TRUE) {
 		start = cutpoint[1]
 		end = cutpoint[2]
 	}
+	
+	# identify if the input was bma or not based on the contents (could be better)
+	is_bma = 'stats' %in% names(itsOutput)	
 	# ---------------------------------------------------------------------------------
 	
 	
@@ -61,7 +64,26 @@ graph = function(itsOutput=NULL, quarterly=TRUE) {
 		graphData = merge(graphData, quarterData, 'moyr', all=TRUE)
 		graphData[, (outcome):=mean]
 	}
+	# ----------------------------------------------------------------------------------------------------
 	
+	
+	# ----------------------------------------------------------------------------------------------------
+	# Formatting
+	
+	# format effect size to be human readable
+	effect_size = exp(effect_size)*100
+	if (effect_size$effect[1]<100) {
+		effect_size[, interpretation:='% Reduction']
+		effect_size[, effect:=100-effect]
+		effect_size[, estimate:=c('Estimate', 'Upper', 'Lower')]
+	} else {
+		effect_size[, interpretation:='% Increase']
+		effect_size[, effect:=effect-100]
+		effect_size[, estimate:=c('Estimate', 'Lower', 'Upper')]
+	}
+	effect_size = data.frame(effect_size)
+	effect_size$effect = round(effect_size$effect, 1)
+
 	# rename variables so aes_string isn't necessary
 	setnames(graphData, c(outcome, paste0(outcome,'_pred'), paste0(outcome,'_pred_upper'), 
 							paste0(outcome,'_pred_lower'), paste0(outcome,'_pred_cf')), 
@@ -105,6 +127,8 @@ graph = function(itsOutput=NULL, quarterly=TRUE) {
 	if (start==end) label1 = label2 = 'PCV Introduction'
 	if (start!=end) label1 = 'PCV Introduction'
 	if (start!=end) label2 = 'PCV Routinization'
+	if (start!=end & is_bma) label1 = 'Effect Window (start)'
+	if (start!=end & is_bma) label2 = 'Effect Window (end)'
 	# ----------------------------------------------------------------------------------------------------------------
 	
 	
