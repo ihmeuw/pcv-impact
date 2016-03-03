@@ -19,8 +19,7 @@
 
 
 # To do
-# - confirm that end-start = the last value of daysDuringIntervention, and that it repeats for all post intervention time points
-
+# - improve effect size estimation when slope is specified
 
 # Define function
 its = function(data=NULL, outcome=NULL, cutpoint=NULL, slope=NULL) {
@@ -63,12 +62,12 @@ its = function(data=NULL, outcome=NULL, cutpoint=NULL, slope=NULL) {
 	if (C==2) data[, duringIntervention:=moyr>start & moyr<end]
 	if (C==2) data[, daysDuringIntervention:=moyr-start]
 	if (C==2) data[daysDuringIntervention<0, daysDuringIntervention:=0]
-	if (C==2) data[postIntervention==TRUE, daysDuringIntervention:=duration] # CHECK THIS 
+	if (C==2) data[postIntervention==TRUE, daysDuringIntervention:=duration]
 	
 	# store formula
 	f = as.formula(paste(paste(formulaVars, collapse=' ~ '), '+ postIntervention'))
-	if (slope) f = as.formula(paste(f, '+ daysPostIntervention'))
-	if (slope & C==2) f = as.formula(paste(f, '+ daysDuringIntervention + daysPostIntervention'))
+	if (slope) f = as.formula(paste(paste(formulaVars, collapse=' ~ '), '+ daysPostIntervention'))
+	if (slope & C==2) f = as.formula(paste(paste(formulaVars, collapse=' ~ '), '+ daysDuringIntervention + daysPostIntervention'))
 	
 	# run regression
 	fit = glm.nb(f, data)
@@ -85,6 +84,7 @@ its = function(data=NULL, outcome=NULL, cutpoint=NULL, slope=NULL) {
 	data[, (paste0(outcome,'_pred')):=exp(preds$fit)]
 	data[, (paste0(outcome,'_pred_upper')):=exp(preds$fit+1.95996*preds$se.fit)]
 	data[, (paste0(outcome,'_pred_lower')):=exp(preds$fit-1.95996*preds$se.fit)]
+	data[, (paste0(outcome,'_pred_se')):=preds$se.fit]
 	
 	# linearly interpolate intervention period if two cutpoints are specified but slope isn't
 	if(!slope & C==2) {
@@ -123,28 +123,24 @@ its = function(data=NULL, outcome=NULL, cutpoint=NULL, slope=NULL) {
 	# ---------------------------------------------------------------------------------
 	
 	
-	# ---------------------------------------------------------------------------------------------
+	# ----------------------------------------------------------------------------------------------------------------
 	# Store effect size and goodness of fit
 	
 	# effect size
-	effect_size = data.table('effect'=exp(cbind(coef(fit), confint(fit))['postInterventionTRUE',]))
+	if (!slope) effect_size = data.table('effect'=cbind(coef(fit), confint(fit), sqrt(diag(vcov(fit))))['postInterventionTRUE',])
 	
-	# format effect size to be human readable
-	effect_size = round(effect_size*100, 1)
-	if (effect_size$effect[1]<100) {
-		effect_size[, interpretation:='% Reduction']
-		effect_size[, effect:=100-effect]
-		effect_size[, estimate:=c('Estimate', 'Upper', 'Lower')]
-	} else {
-		effect_size[, interpretation:='% Increase']
-		effect_size[, effect:=effect-100]
-		effect_size[, estimate:=c('Estimate', 'Lower', 'Upper')]
+	# effect size if slope (fix me)
+	if (slope) {
+		effect = data[[paste0(outcome,'_pred')]][data$moyr==end] - data[[paste0(outcome,'_pred_cf')]][data$moyr==end]
+		effect_lower = data[[paste0(outcome,'_pred_upper')]][data$moyr==end] - data[[paste0(outcome,'_pred_cf')]][data$moyr==end]
+		effect_upper = data[[paste0(outcome,'_pred_lower')]][data$moyr==end] - data[[paste0(outcome,'_pred_cf')]][data$moyr==end]
+		effect_se = (effect_upper-effect)/1.95996
+		effect_size = data.table('effect'=c(effect, effect_upper, effect_lower, effect_se))
 	}
-	effect_size = data.frame(effect_size)
 	
 	# GoF
 	gof = BIC(fit)
-	# ---------------------------------------------------------------------------------------------
+	# ----------------------------------------------------------------------------------------------------------------
 	
 	
 	# -------------------------------------------
@@ -159,9 +155,8 @@ its = function(data=NULL, outcome=NULL, cutpoint=NULL, slope=NULL) {
 	# -------------------------------------------
 		
 	
-	# --------------------------------------------------------------
+	# -----------------------------------------------------------------------------------------------------
 	# Return output
-	return(list('data'=data, 'outcome'=outcome, 'cutpoint'=cutpoint, 
-					'effect_size'=effect_size, 'gof'=gof))
-	# --------------------------------------------------------------
+	return(list('data'=data, 'outcome'=outcome, 'cutpoint'=cutpoint, 'effect_size'=effect_size, 'gof'=gof))
+	# -----------------------------------------------------------------------------------------------------
 }
