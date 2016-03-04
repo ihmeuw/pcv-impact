@@ -62,8 +62,8 @@ for(o in seq(length(outcomes))) {
 }
 
 # basic ITS across cut points
-firstCut = as.Date('010113', '%d%m%y')
-lastCut = as.Date('010614', '%d%m%y')
+firstCut = as.Date('010413', '%d%m%y')
+lastCut = as.Date('011114', '%d%m%y')
 cutpoints = seq(from=firstCut, to=lastCut, by='month')
 itsCutpointResults = vector('list', length(cutpoints)) 
 for(c in seq(length(cutpoints))) {
