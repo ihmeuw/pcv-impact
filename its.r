@@ -131,9 +131,9 @@ its = function(data=NULL, outcome=NULL, cutpoint=NULL, slope=NULL) {
 	
 	# effect size if slope (fix me)
 	if (slope) {
-		effect = data[[paste0(outcome,'_pred')]][data$moyr==end] - data[[paste0(outcome,'_pred_cf')]][data$moyr==end]
-		effect_lower = data[[paste0(outcome,'_pred_upper')]][data$moyr==end] - data[[paste0(outcome,'_pred_cf')]][data$moyr==end]
-		effect_upper = data[[paste0(outcome,'_pred_lower')]][data$moyr==end] - data[[paste0(outcome,'_pred_cf')]][data$moyr==end]
+		effect = mean(data[[paste0(outcome,'_pred')]][data$moyr>=start] - data[[paste0(outcome,'_pred_cf')]][data$moyr>=start])
+		effect = mean(data[[paste0(outcome,'_pred_upper')]][data$moyr>=start] - data[[paste0(outcome,'_pred_cf')]][data$moyr>=start])
+		effect = mean(data[[paste0(outcome,'_pred_lower')]][data$moyr>=start] - data[[paste0(outcome,'_pred_cf')]][data$moyr>=start])
 		effect_se = (effect_upper-effect)/1.95996
 		effect_size = data.table('effect'=c(effect, effect_upper, effect_lower, effect_se))
 	}
