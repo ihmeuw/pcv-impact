@@ -58,7 +58,7 @@ inputData = prepData(paste0(root, 'data'))
 cutpoints = as.Date(c('010413', '010114'), '%d%m%y')
 itsOutcomeResults = vector('list', length(outcomes)) 
 for(o in seq(length(outcomes))) {
-	itsOutcomeResults[[o]] = its(data=inputData, outcome=outcomes[o], cutpoint=cutpoints, slope=TRUE)
+	itsOutcomeResults[[o]] = its(data=inputData, outcome=outcomes[o], cutpoint=cutpoints, slope=FALSE)
 }
 
 # basic ITS across cut points
@@ -66,8 +66,10 @@ firstCut = as.Date('010413', '%d%m%y')
 lastCut = as.Date('011114', '%d%m%y')
 cutpoints = seq(from=firstCut, to=lastCut, by='month')
 itsCutpointResults = vector('list', length(cutpoints)) 
-for(c in seq(length(cutpoints))) {
-	itsCutpointResults[[c]] = its(data=inputData, outcome='ipd_pcv10_serotype_cases', cutpoint=cutpoints[c], slope=TRUE)
+for(o in seq(length(outcomes))) {
+	for(c in seq(length(cutpoints))) {
+		itsCutpointResults[[((length(cutpoints)*(o-1))+c)]] = its(data=inputData, outcome=outcomes[[o]], cutpoint=cutpoints[c], slope=FALSE)
+	}
 }
 
 # # two slopes
@@ -78,7 +80,8 @@ for(c in seq(length(cutpoints))) {
 # }
 
 # BMA of ITS across cut points
-bmaResults = bma(itsCutpointResults)
+bmaResults = vector('list', length(outcomes))
+for(o in seq(length(outcomes))) bmaResults[[o]] = bma(itsCutpointResults[((length(cutpoints)*(o-1))+1):(length(cutpoints)*o)])
 # ------------------------------------------------------------------------------------------------------------------------
 
 
@@ -94,18 +97,18 @@ dev.off()
 pdf(itsCutpointFile, height=6, width=10)
 
 # graph bma result
-plot(graph(itsOutput=bmaResults, quarterly=TRUE))
+for(o in seq(length(outcomes))) plot(graph(itsOutput=bmaResults[[o]], quarterly=TRUE))
 
-# graph bma weights, effects and uncertainty
-tmpData = copy(bmaResults$stats)
-tmpData[, effect:=100-(exp(effect)*100)]
-setnames(tmpData, c('weight', 'effect', 'effect_se'), c('Model Weight', '% Reduction', 'Effect Standard Error'))
-tmpData = melt(tmpData, id.vars='cutpoint', measure.vars=c('Model Weight', '% Reduction', 'Effect Standard Error'))
-ggplot(tmpData, aes(y=value, x=cutpoint)) +
-		geom_line() + geom_point() + facet_wrap(~variable, scales='free') +
-		labs(title='BMA Weights', y='Weight (Uniform Prior)', x='Cutpoint') + theme_bw()
+# # graph bma weights, effects and uncertainty
+# tmpData = copy(bmaResults$stats)
+# tmpData[, effect:=100-(exp(effect)*100)]
+# setnames(tmpData, c('weight', 'effect', 'effect_se'), c('Model Weight', '% Reduction', 'Effect Standard Error'))
+# tmpData = melt(tmpData, id.vars='cutpoint', measure.vars=c('Model Weight', '% Reduction', 'Effect Standard Error'))
+# ggplot(tmpData, aes(y=value, x=cutpoint)) +
+		# geom_line() + geom_point() + facet_wrap(~variable, scales='free') +
+		# labs(title='BMA Weights', y='Weight (Uniform Prior)', x='Cutpoint') + theme_bw()
 		
-# graph individual results that went into bma
-for(c in seq(length(itsCutpointResults))) plot(graph(itsOutput=itsCutpointResults[[c]], quarterly=TRUE))
+# # graph individual results that went into bma
+# for(c in seq(length(itsCutpointResults))) plot(graph(itsOutput=itsCutpointResults[[c]], quarterly=TRUE))
 dev.off()
 # --------------------------------------------------------------------------------------------------------------
