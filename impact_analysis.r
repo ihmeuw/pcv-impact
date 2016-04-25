@@ -37,7 +37,7 @@ root = 'J:/Project/Evaluation/GAVI/Mozambique/pcv_impact/'
 
 # graph files
 itsOutcomeFile = paste0(root, 'output/its_by_outcome.pdf')
-itsCutpointFile = paste0(root, 'output/its_by_cutpoint.pdf')
+bmaFile = paste0(root, 'output/bma_by_outcome.pdf')
 
 # list of outcome variables
 outcomes = c('ipd_cases', 'ipd_pcv10_serotype_cases', 
@@ -63,7 +63,7 @@ for(o in seq(length(outcomes))) {
 
 # basic ITS across cut points
 firstCut = as.Date('010413', '%d%m%y')
-lastCut = as.Date('011114', '%d%m%y')
+lastCut = as.Date('010114', '%d%m%y')
 cutpoints = seq(from=firstCut, to=lastCut, by='month')
 itsCutpointResults = vector('list', length(cutpoints)) 
 for(o in seq(length(outcomes))) {
@@ -94,7 +94,7 @@ for(o in seq(length(outcomes))) plot(graph(itsOutput=itsOutcomeResults[[o]], qua
 dev.off()
 
 # BMA
-pdf(itsCutpointFile, height=6, width=10)
+pdf(bmaFile, height=6, width=10)
 
 # graph bma result
 for(o in seq(length(outcomes))) plot(graph(itsOutput=bmaResults[[o]], quarterly=TRUE))
