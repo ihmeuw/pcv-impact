@@ -22,7 +22,7 @@ library(ggplot2)
 # Files, directories and settings
 
 # change to code directory
-codeDir = 'H:/local/mixed-methods-analysis/pcv_impact/code/'
+codeDir = 'C:/local/mixed-methods-analysis/pcv_impact/code/'
 setwd(codeDir)
 
 # load functions
@@ -36,12 +36,12 @@ source(paste0(codeDir, 'graph.r'))
 root = 'J:/Project/Evaluation/GAVI/Mozambique/pcv_impact/'
 
 # graph files
-itsOutcomeFile = paste0(root, 'output/its_by_outcome.pdf')
-bmaFile = paste0(root, 'output/bma_by_outcome.pdf')
+itsOutcomeFile = paste0(root, 'output/its_results.pdf')
+bmaFile = paste0(root, 'output/bma_results.pdf')
 
 # list of outcome variables
 outcomes = c('ipd_cases', 'ipd_pcv10_serotype_cases', 
-				'ipd_non_pcv10_serotype_cases')
+				'ipd_non_pcv10_serotype_cases', 'xrcp_cases')
 # ------------------------------------------------------------------------
 
 
