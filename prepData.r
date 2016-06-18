@@ -14,39 +14,48 @@
 # Define function
 prepData = function(dir=NULL) {
 	
-	# ---------------------------------------------------------------------
+	# ------------------------------------------------------------
 	# Handle inputs
 	
 	# test
 	if (is.null(dir)) stop('Must provide directory')
 	
 	# data files
-	ipdFile = paste0(dir, '/ipd_monthly_rates_final_cism_Mozambique.xls')
-	xrcpFile = paste0(dir, '/xrcp_monthly_rates_final_cism_mozambique.xls')
+	ipdFile = paste0(dir, '/ipd_monthly_rates.xls')
+	vtFile = paste0(dir, '/vt_ipd_monthly_rates.xls')
+	xrcpFile = paste0(dir, '/xrcp_monthly_rates.xls')
 	
 	# more tests
 	if (!file.exists(ipdFile)) stop(paste(ipdFile, 'not found'))
+	if (!file.exists(vtFile)) stop(paste(vtFile, 'not found'))
 	if (!file.exists(xrcpFile)) stop(paste(xrcpFile, 'not found'))
-	# ---------------------------------------------------------------------
-
+	# ------------------------------------------------------------
+	
 	
 	# --------------------------------------------------------------------------------------------
 	# Load data
 	
 	# load and convert to data tables
 	ipdData = data.table(read_excel(ipdFile))
+	vtData = data.table(read_excel(vtFile))
 	xrcpData = data.table(read_excel(xrcpFile))
 	
 	# test unique identifiers
-	test = length(unique(ipdData$Month))==nrow(ipdData)
+	test = length(unique(ipdData$month))==nrow(ipdData)
 	if (!test) stop('Month does not uniquely identify rows in IPD data')
-	test = length(unique(xrcpData$Month))==nrow(xrcpData)
+	test = length(unique(vtData$month))==nrow(vtData)
 	if (!test) stop('Month does not uniquely identify rows in IPD data')
-	mismatches = xrcpData$Month[!xrcpData$Month %in% ipdData$Month]
+	test = length(unique(xrcpData$month))==nrow(xrcpData)
+	if (!test) stop('Month does not uniquely identify rows in IPD data')
+	mismatches = xrcpData$Month[!xrcpData$month %in% ipdData$month]
 	if (length(mismatches>0)) stop('There are month-years in XRCP data that aren\'t in IPD data')
 	
-	# merge IPD and XRCP together
-	data = merge(ipdData, xrcpData, 'Month', all=TRUE)
+	# drop XRCP zeroes that represent no surveillance
+	xrcpData = xrcpData[c(1:25, 31:43, 71:106, 119:142)]
+	
+	# merge IPD, VT and XRCP together
+	data = merge(ipdData, vtData, 'month', all=TRUE)
+	data = merge(data, xrcpData, 'month', all=TRUE)
 	# --------------------------------------------------------------------------------------------
 	
 	
@@ -55,7 +64,7 @@ prepData = function(dir=NULL) {
 	
 	# variable names
 	newNames = c('moyr', 'ipd_cases', 'ipd_exposure', 'ipd_pcv10_serotype_cases', 
-						'ipd_pcv13_serotype_cases', 'xrcp_cases', 'xrcp_exposure')
+						'ipd_pcv10_serotype_exposure', 'xrcp_cases', 'xrcp_exposure')
 	setnames(data, names(data), newNames)
 	
 	# date format
