@@ -64,6 +64,9 @@ its = function(data=NULL, outcome=NULL, cutpoint=NULL, slope=NULL) {
 	if (C==2) data[daysDuringIntervention<0, daysDuringIntervention:=0]
 	if (C==2) data[postIntervention==TRUE, daysDuringIntervention:=duration]
 	
+	# make sure it's sorted
+	data = data[order(moyr)]
+	
 	# store formula
 	f = as.formula(paste(paste(formulaVars, collapse=' ~ '), '+ postIntervention'))
 	if (slope) f = as.formula(paste(paste(formulaVars, collapse=' ~ '), '+ daysPostIntervention'))
@@ -78,7 +81,7 @@ its = function(data=NULL, outcome=NULL, cutpoint=NULL, slope=NULL) {
 	# Predict
 	
 	# store predictions
-	preds = predict(fit, type='link', se.fit=TRUE)
+	preds = predict(fit, type='link', se.fit=TRUE, newdata=data)
 	
 	# exponentiate/include uncertainty and add to data
 	data[, (paste0(outcome,'_pred')):=exp(preds$fit)]
@@ -114,7 +117,7 @@ its = function(data=NULL, outcome=NULL, cutpoint=NULL, slope=NULL) {
 	cfFit$coefficients[3:length(cfFit$coefficients)] = 0
 	
 	# store counterfactual predictions
-	cfPreds = predict(cfFit, type='link', se.fit=TRUE)
+	cfPreds = predict(cfFit, type='link', se.fit=TRUE, newdata=data)
 	
 	# exponentiate/include uncertainty and add to data
 	data[, (paste0(outcome,'_pred_cf')):=exp(cfPreds$fit)]
