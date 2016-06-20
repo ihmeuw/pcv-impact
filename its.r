@@ -49,7 +49,7 @@ its = function(data=NULL, outcome=NULL, cutpoint=NULL, slope=NULL) {
 		duration = (end-start)[[1]]
 	}
 	# ------------------------------------------------------------------------------
-
+	
 	
 	# -------------------------------------------------------------------------------------------
 	# Set up/run regression
@@ -135,8 +135,8 @@ its = function(data=NULL, outcome=NULL, cutpoint=NULL, slope=NULL) {
 	# effect size if slope (fix me)
 	if (slope) {
 		effect = mean(data[[paste0(outcome,'_pred')]][data$moyr>=start] - data[[paste0(outcome,'_pred_cf')]][data$moyr>=start])
-		effect = mean(data[[paste0(outcome,'_pred_upper')]][data$moyr>=start] - data[[paste0(outcome,'_pred_cf')]][data$moyr>=start])
-		effect = mean(data[[paste0(outcome,'_pred_lower')]][data$moyr>=start] - data[[paste0(outcome,'_pred_cf')]][data$moyr>=start])
+		effect_lower = mean(data[[paste0(outcome,'_pred_upper')]][data$moyr>=start] - data[[paste0(outcome,'_pred_cf')]][data$moyr>=start])
+		effect_upper = mean(data[[paste0(outcome,'_pred_lower')]][data$moyr>=start] - data[[paste0(outcome,'_pred_cf')]][data$moyr>=start])
 		effect_se = (effect_upper-effect)/1.95996
 		effect_size = data.table('effect'=c(effect, effect_upper, effect_lower, effect_se))
 	}
