@@ -36,8 +36,8 @@ source(paste0(codeDir, 'graph.r'))
 root = 'J:/Project/Evaluation/GAVI/Mozambique/pcv_impact/'
 
 # graph files
-itsOutcomeFile = paste0(root, 'output/its_results.pdf')
-bmaFile = paste0(root, 'output/bma_results.pdf')
+itsOutcomeFile = paste0(root, 'output/its_results_slope_Dec2015.pdf')
+bmaFile = paste0(root, 'output/bma_results_slope_Dec2015.pdf')
 
 # list of outcome variables
 outcomes = c('ipd_cases', 'ipd_pcv10_serotype_cases', 
@@ -58,7 +58,8 @@ inputData = prepData(paste0(root, 'data'))
 cutpoints = as.Date(c('010413', '010114'), '%d%m%y')
 itsOutcomeResults = vector('list', length(outcomes)) 
 for(o in seq(length(outcomes))) {
-	itsOutcomeResults[[o]] = its(data=inputData, outcome=outcomes[o], cutpoint=cutpoints, slope=FALSE)
+	itsOutcomeResults[[o]] = its(data=inputData, outcome=outcomes[o], cutpoint=cutpoints, 
+									slope=TRUE, newEffectDate=as.Date('2015-12-01'))
 }
 
 # basic ITS across cut points
@@ -68,7 +69,11 @@ cutpoints = seq(from=firstCut, to=lastCut, by='month')
 itsCutpointResults = vector('list', length(cutpoints)) 
 for(o in seq(length(outcomes))) {
 	for(c in seq(length(cutpoints))) {
-		itsCutpointResults[[((length(cutpoints)*(o-1))+c)]] = its(data=inputData, outcome=outcomes[[o]], cutpoint=cutpoints[c], slope=FALSE)
+		itsCutpointResults[[((length(cutpoints)*(o-1))+c)]] = its(data=inputData, 
+																	outcome=outcomes[[o]], 
+																	cutpoint=cutpoints[c], 
+																	slope=TRUE,
+																	newEffectDate=as.Date('2015-12-01'))
 	}
 }
 

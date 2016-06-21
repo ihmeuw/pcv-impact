@@ -1,4 +1,4 @@
-# ----------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------------------
 # David Phillips
 #
 # 3/1/2016
@@ -9,7 +9,7 @@
 
 # Outputs:  
 # * p - a ggplot graph
-# ----------------------------------------------------------------------------------------
+# ----------------------------------------------------------------------------------------------------
 
 
 # Define function
@@ -123,12 +123,12 @@ graph = function(itsOutput=NULL, quarterly=TRUE) {
 	if (effect_size[1,2]=='% Reduction') annotationY = min(graphData$observed, na.rm=TRUE)
 	if (effect_size[1,2]!='% Reduction') annotationY = max(graphData$observed, na.rm=TRUE)
 	annotationX = start-450
-	annotationLocation = data.frame(x=annotationX, y=annotationY, xend=end, yend=graphData$trend[graphData$moyr==end])
+	if (!is.null(newEffectDate)) annotationEnd = newEffectDate
+	if (is.null(newEffectDate)) annotationEnd = end
+	annotationLocation = data.frame(x=annotationX, y=annotationY, xend=annotationEnd, yend=graphData$trend[graphData$moyr==annotationEnd])
 	if (start==end) label1 = label2 = 'PCV Introduction'
 	if (start!=end) label1 = 'PCV Introduction'
 	if (start!=end) label2 = 'PCV Routinization'
-	if (start!=end & is_bma) label1 = 'Effect Window (start)'
-	if (start!=end & is_bma) label2 = 'Effect Window (end)'
 	# ----------------------------------------------------------------------------------------------------------------
 	
 	

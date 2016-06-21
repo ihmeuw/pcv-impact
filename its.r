@@ -8,6 +8,7 @@
 # * outcome  - character. name of the outcome variable
 # * cutpoint - date object containing the time point or points (up to 2) of intervention
 # * slope    - logical. TRUE indicates that an interaction term (or terms) should be used to estimate a different slope before/after intervetion
+# * newEffectDate - date. date for which effect size should be calculated. defaults to cutoff if null, over-rides the regression coef if not null
 
 # Outputs (in a list):  
 # * data        - the input data object with six new columns: [outcome]_pred, [outcome]_pred_upper, [outcome]_pred_lower, [outcome]_cf, [outcome]_cf_upper, [outcome]_cf_lower,
@@ -22,7 +23,7 @@
 # - improve effect size estimation when slope is specified
 
 # Define function
-its = function(data=NULL, outcome=NULL, cutpoint=NULL, slope=NULL) {
+its = function(data=NULL, outcome=NULL, cutpoint=NULL, slope=NULL, newEffectDate=NULL) {
 	
 	# ------------------------------------------------------------------------------
 	# Handle inputs
@@ -76,7 +77,7 @@ its = function(data=NULL, outcome=NULL, cutpoint=NULL, slope=NULL) {
 	fit = glm.nb(f, data)
 	# -------------------------------------------------------------------------------------------
 	
-
+	
 	# -----------------------------------------------------------------------------------------------
 	# Predict
 	
@@ -132,11 +133,14 @@ its = function(data=NULL, outcome=NULL, cutpoint=NULL, slope=NULL) {
 	# effect size
 	if (!slope) effect_size = data.table('effect'=cbind(coef(fit), confint(fit), sqrt(diag(vcov(fit))))['postInterventionTRUE',])
 	
-	# effect size if slope (fix me)
-	if (slope) {
-		effect = mean(data[[paste0(outcome,'_pred')]][data$moyr>=start] - data[[paste0(outcome,'_pred_cf')]][data$moyr>=start])
-		effect_lower = mean(data[[paste0(outcome,'_pred_upper')]][data$moyr>=start] - data[[paste0(outcome,'_pred_cf')]][data$moyr>=start])
-		effect_upper = mean(data[[paste0(outcome,'_pred_lower')]][data$moyr>=start] - data[[paste0(outcome,'_pred_cf')]][data$moyr>=start])
+	# effect size if slope or new date specified (fix me)
+	# note: this is based on the prediction/prediction interval, not the regression coefficients
+	if (slope | !is.null(newEffectDate)) {
+		refDate = start
+		if (!is.null(newEffectDate)) refDate = newEffectDate
+		effect = log(data[[paste0(outcome,'_pred')]][data$moyr==refDate]) - log(data[[paste0(outcome,'_pred_cf')]][data$moyr==refDate])
+		effect_lower = log(data[[paste0(outcome,'_pred_upper')]][data$moyr==refDate]) - log(data[[paste0(outcome,'_pred_cf')]][data$moyr==refDate])
+		effect_upper = log(data[[paste0(outcome,'_pred_lower')]][data$moyr==refDate]) - log(data[[paste0(outcome,'_pred_cf')]][data$moyr==refDate])
 		effect_se = (effect_upper-effect)/1.95996
 		effect_size = data.table('effect'=c(effect, effect_upper, effect_lower, effect_se))
 	}
@@ -158,8 +162,9 @@ its = function(data=NULL, outcome=NULL, cutpoint=NULL, slope=NULL) {
 	# -------------------------------------------
 		
 	
-	# -----------------------------------------------------------------------------------------------------
+	# -----------------------------------------------------------------------------
 	# Return output
-	return(list('data'=data, 'outcome'=outcome, 'cutpoint'=cutpoint, 'effect_size'=effect_size, 'gof'=gof))
-	# -----------------------------------------------------------------------------------------------------
+	return(list('data'=data, 'outcome'=outcome, 'cutpoint'=cutpoint, 
+				'effect_size'=effect_size, 'gof'=gof, newEffectDate=newEffectDate))
+	# -----------------------------------------------------------------------------
 }
