@@ -36,8 +36,8 @@ source(paste0(codeDir, 'graph.r'))
 root = 'J:/Project/Evaluation/GAVI/Mozambique/pcv_impact/'
 
 # graph files
-itsOutcomeFile = paste0(root, 'output/its_results_slope.pdf')
-bmaFile = paste0(root, 'output/bma_results_slope.pdf')
+itsOutcomeFile = paste0(root, 'output/its_results_slope_noend.pdf')
+bmaFile = paste0(root, 'output/bma_results_slope_noend.pdf')
 
 # list of outcome variables
 outcomes = c('ipd_cases', 'ipd_pcv10_serotype_cases', 
@@ -55,7 +55,7 @@ inputData = prepData(paste0(root, 'data'))
 # Execute analysis
 
 # basic ITS across outcomes
-cutpoints = as.Date(c('010413', '010114'), '%d%m%y')
+cutpoints = as.Date(c('010413', '010516'), '%d%m%y')
 itsOutcomeResults = vector('list', length(outcomes)) 
 for(o in seq(length(outcomes))) {
 	itsOutcomeResults[[o]] = its(data=inputData, outcome=outcomes[o], cutpoint=cutpoints, 
@@ -63,8 +63,8 @@ for(o in seq(length(outcomes))) {
 }
 
 # basic ITS across cut points
-firstCut = as.Date('010413', '%d%m%y')
-lastCut = as.Date('010114', '%d%m%y')
+firstCut = cutpoints[1]
+lastCut = cutpoints[2]
 cutpoints = seq(from=firstCut, to=lastCut, by='month')
 itsCutpointResults = vector('list', length(cutpoints)) 
 for(o in seq(length(outcomes))) {
