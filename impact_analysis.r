@@ -18,7 +18,7 @@ library(ggplot2)
 # ------------------
 
 
-# ------------------------------------------------------------------------
+# --------------------------------------------------------------
 # Files, directories and settings
 
 # change to code directory
@@ -42,19 +42,19 @@ bmaFile = paste0(root, 'output/bma_results_slope.pdf')
 # list of outcome variables
 outcomes = c('ipd_cases', 'ipd_pcv10_serotype_cases', 
 				'ipd_non_pcv10_serotype_cases', 'xrcp_cases')
-# ------------------------------------------------------------------------
+# --------------------------------------------------------------
 
 
-# -----------------------------------
+# ----------------------------------------
 # Load/prep data
 inputData = prepData(paste0(root, 'data'))
-# -----------------------------------
+# ----------------------------------------
 
 
 # ------------------------------------------------------------------------------------------------------------------------
 # Execute analysis
 
-# basic ITS across outcomes
+# basic ITS across outcomes with two slopes
 cutpoints = as.Date(c('010413', '010114'), '%d%m%y')
 itsOutcomeResults = vector('list', length(outcomes)) 
 for(o in seq(length(outcomes))) {
@@ -77,11 +77,12 @@ for(o in seq(length(outcomes))) {
 	}
 }
 
-# # two slopes
+# basic ITS across cutpoints with two slopes
 # cutpoints = as.Date(combn(cutpoints, 2), origin='1970-01-01')
 # itsCutpointResults = vector('list', ncol(cutpoints)) 
 # for(c in seq(ncol(cutpoints))) {
-	# itsCutpointResults[[c]] = its(data=inputData, outcome='ipd_pcv10_serotype_cases', cutpoint=cutpoints[,c], slope=TRUE)
+	# itsCutpointResults[[c]] = its(data=inputData, outcome='ipd_pcv10_serotype_cases', 
+									# cutpoint=cutpoints[,c], slope=TRUE, newEffectDate=as.Date('2016-06-01'))
 # }
 
 # BMA of ITS across cut points
