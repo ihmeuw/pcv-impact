@@ -84,7 +84,7 @@ bma = function(itsResults) {
 	data[, model_variance:=(log(get(predVar))-log(mean))^2]
 	
 	# prediction uncertainty intervals
-	meanSe = data[, list(se=mean(get(predSeVar), weight=weight)), by='moyr'] # no model uncertainty
+	meanSe = data[, list(se=mean(get(predSeVar), weight=weight)), by='moyr'] # no model uncertainty (within-model variance only)
 	# meanSe = data[, list(se=sqrt(mean(get(predSeVar)^2+model_variance, weight=weight))), by='moyr'] # w/ model uncertainty
 	meanData = merge(meanData, meanSe, 'moyr')
 	meanData[, (upperVar):=exp(log(get(predVar))+1.95996*se)]
