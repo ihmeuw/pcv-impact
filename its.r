@@ -69,8 +69,9 @@ its = function(data=NULL, outcome=NULL, cutpoint=NULL, slope=NULL, newEffectDate
 	data = data[order(moyr)]
 	
 	# store formula
-	f = as.formula(paste(paste(formulaVars, collapse=' ~ '), '+ postIntervention'))
-	if (slope) f = as.formula(paste(paste(formulaVars, collapse=' ~ '), '+ daysPostIntervention'))
+	if (!slope & C==1) f = as.formula(paste(paste(formulaVars, collapse=' ~ '), '+ postIntervention'))
+	if (slope & C==1) f = as.formula(paste(paste(formulaVars, collapse=' ~ '), '+ daysPostIntervention'))
+	if (!slope & C==2) f = as.formula(paste(paste(formulaVars, collapse=' ~ '), '+ duringIntervention + postIntervention'))
 	if (slope & C==2) f = as.formula(paste(paste(formulaVars, collapse=' ~ '), '+ daysDuringIntervention + daysPostIntervention'))
 	
 	# run regression
