@@ -10,6 +10,8 @@
 # * data - all datasets in 'prepped' format (see readme)
 # ---------------------------------------------------------
 
+# to do
+# - more tests on input data (variable names, order etc)
 
 # Define function
 prepData = function(dir=NULL) {
