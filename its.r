@@ -76,7 +76,7 @@ its = function(data=NULL, outcome=NULL, cutpoint=NULL, slope=NULL, newEffectDate
 	if (slope & C==2) f = as.formula(paste(paste(formulaVars, collapse=' ~ '), '+ daysDuringIntervention + daysPostIntervention'))
 	
 	# run regression
-	fit = glm.nb(f, data)
+	fit = suppressWarnings(glm.nb(f, data))
 	# -------------------------------------------------------------------------------------------
 	
 	

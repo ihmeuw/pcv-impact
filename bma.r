@@ -63,8 +63,8 @@ bma = function(itsResults) {
 	effect_size = stats[, list(effect=mean(effect, weight=weight))]
 	
 	# average predictions
-	meanData = data[, lapply(.SD, mean, weight=weight, na.rm=TRUE), by='moyr', 
-				.SDcols=names(data)[!names(data) %in% c('moyr', 'weight', 'gof')]]
+	meanData = suppressWarnings(data[, lapply(.SD, mean, weight=weight, na.rm=TRUE), by='moyr', 
+				.SDcols=names(data)[!names(data) %in% c('moyr', 'weight', 'gof')]])
 	
 	# estimate effect size standard errors including model variance 
 	# not between-model variance, but squared error from the midpoint estimate according to Dan Weinberger's SAS code
@@ -74,7 +74,7 @@ bma = function(itsResults) {
 	# effect size uncertainty intervals
 	effect_size[, upper:=effect+1.95996*se]
 	effect_size[, lower:=effect-1.95996*se]
-	effect_size = melt(effect_size[, c('effect', 'lower', 'upper', 'se'), with=F], value.name='effect')
+	effect_size = suppressWarnings(melt(effect_size[, c('effect', 'lower', 'upper', 'se'), with=F], value.name='effect'))
 	effect_size$variable = NULL
 	
 	# estimate prediction standard errors
@@ -84,7 +84,7 @@ bma = function(itsResults) {
 	data[, model_variance:=(log(get(predVar))-log(mean))^2]
 	
 	# prediction uncertainty intervals
-	meanSe = data[, list(se=mean(get(predSeVar), weight=weight)), by='moyr'] # no model uncertainty (within-model variance only)
+	meanSe = suppressWarnings(data[, list(se=mean(get(predSeVar), weight=weight)), by='moyr']) # no model uncertainty (within-model variance only)
 	# meanSe = data[, list(se=sqrt(mean(get(predSeVar)^2+model_variance, weight=weight))), by='moyr'] # w/ model uncertainty
 	meanData = merge(meanData, meanSe, 'moyr')
 	meanData[, (upperVar):=exp(log(get(predVar))+1.95996*se)]
