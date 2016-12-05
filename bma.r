@@ -43,14 +43,15 @@ bma = function(itsResults) {
 	# isolate gof/cutpoints,effect sizes into a separate data table
 	stats = data.table(NULL)
 	for(d in seq(length(itsResults))) {
-		tmp = data.table(cutpoint=itsResults[[d]]$cutpoint, 
+		tmp = data.table(cutpoint=itsResults[[d]]$cutpoint[1], 
 							effect=as.numeric(itsResults[[d]]$effect_size[1,]), 
 							effect_se=as.numeric(itsResults[[d]]$effect_size[4,]), 
 							gof=itsResults[[d]]$gof)
+		if (length(itsResults[[d]]$cutpoint)>1) tmp[, cutpoint2:=itsResults[[d]]$cutpoint[2]]
 		stats = rbind(stats, tmp)
 	}
 	# ---------------------------------------------------------------------------------
-
+	
 	
 	# -----------------------------------------------------------------------------------------------------------
 	# Average
