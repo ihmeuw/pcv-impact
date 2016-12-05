@@ -54,17 +54,21 @@ modelOutput = lapply(paste0(outputFileStub, input_names, '.rdata'), function(x) 
 })
 
 # assemble effect estimates into a workable data table
-effectSizes = data.table()
-for(run in seq(length(modelOutput))) {
-	for(outcome in seq(length(modelOutput[[run]]))) {
-		tmp = modelOutput[[run]][[outcome]]$effect_size
-		tmpOut = modelOutput[[run]][[outcome]]$outcome
-		tmp = data.table(tmp)
-		tmp[, run:=input_names[run]]
-		tmp[, outcome:=tmpOut]
-		effectSizes = rbind(effectSizes, tmp)
+assembleData = function(objName) { 
+	output = data.table()
+	for(run in seq(length(modelOutput))) {
+		for(outcome in seq(length(modelOutput[[run]]))) {
+			tmp = modelOutput[[run]][[outcome]][[objName]]
+			tmpOut = modelOutput[[run]][[outcome]]$outcome
+			tmp = data.table(tmp)
+			tmp[, run:=input_names[run]]
+			tmp[, outcome:=tmpOut]
+			output = rbind(output, tmp, fill=TRUE)
+		}
 	}
+	return(output)
 }
+effectSizes = assembleData('effect_size')
 
 # prep effect sizes/labels
 effectSizes[, est:=c('Estimate', 'Upper', 'Lower', 'se')]
@@ -77,7 +81,22 @@ effectSizes[outcome=='ipd_non_pcv10_serotype_cases', outcome_label:='Non−PCV10
 effectSizes[outcome=='xrcp_cases', outcome_label:='All X−Ray Confirmed Cases']
 
 # assemble fitted values into a workable data table
+fittedValues = assembleData('data')
 
+# prep fitted values/labels
+fittedValues[, run_id:=match(run, input_names)]
+fittedValues[outcome=='ipd_cases', outcome_label:='All IPD Cases']
+fittedValues[outcome=='ipd_pcv10_serotype_cases', outcome_label:='PCV10 Serotypes']
+fittedValues[outcome=='ipd_non_pcv10_serotype_cases', outcome_label:='Non−PCV10 Serotypes']
+fittedValues[outcome=='xrcp_cases', outcome_label:='All X−Ray Confirmed Cases']
+fittedValues[outcome=='ipd_cases', est:=ipd_cases_pred]
+fittedValues[outcome=='ipd_pcv10_serotype_cases', est:=ipd_pcv10_serotype_cases_pred]
+fittedValues[outcome=='ipd_non_pcv10_serotype_cases', est:=ipd_non_pcv10_serotype_cases_pred]
+fittedValues[outcome=='xrcp_cases', est:=xrcp_cases_pred]
+fittedValues[outcome=='ipd_cases', cases:=ipd_cases]
+fittedValues[outcome=='ipd_pcv10_serotype_cases', cases:=ipd_pcv10_serotype_cases]
+fittedValues[outcome=='ipd_non_pcv10_serotype_cases', cases:=ipd_non_pcv10_serotype_cases]
+fittedValues[outcome=='xrcp_cases', cases:=xrcp_cases]
 # -----------------------------------------------------------------------------------------
 
 
@@ -85,19 +104,31 @@ effectSizes[outcome=='xrcp_cases', outcome_label:='All X−Ray Confirmed Cases']
 # Graph
 
 # graph settings
-colors = brewer.pal(3, 'Paired')
+colors1 = brewer.pal(3, 'Paired')
+colors2 = brewer.pal(6, 'GnBu')[-1]
 smoothFormula = y ~ poly(x, 4) + poly(x, 3) + poly(x, 2)
 
 # graph effect sizes
 ggplot(effectSizes[est=='Estimate'], aes(y=effect, x=run_id)) + 
 	geom_hline(yintercept=0, color='red') + 
-	geom_smooth(se=FALSE, method='lm', formula=smoothFormula, color=colors[2]) + 
-	geom_smooth(data=effectSizes[est=='Lower'], se=FALSE, method='lm', formula=smoothFormula, color=colors[1]) + 
-	geom_smooth(data=effectSizes[est=='Upper'], se=FALSE, method='lm', formula=smoothFormula, color=colors[1]) + 
+	geom_smooth(se=FALSE, method='lm', formula=smoothFormula, color=colors1[2]) + 
+	geom_smooth(data=effectSizes[est=='Lower'], se=FALSE, method='lm', formula=smoothFormula, color=colors1[1]) + 
+	geom_smooth(data=effectSizes[est=='Upper'], se=FALSE, method='lm', formula=smoothFormula, color=colors1[1]) + 
 	geom_point() + 
 	geom_point(data=effectSizes[est=='Lower']) + 
 	geom_point(data=effectSizes[est=='Upper']) + 
 	facet_wrap(~outcome_label, scales='free_y') + 
-	labs(title='Effect Size At Varying Window Width', y='Effect Size (% Change)', x='Window Width') + 
+	labs(title='Effect Size at Varying Window Width', y='Effect Size (% Change)', x='Window Width') + 
+	theme_bw()
+
+# graph fitted values
+ggplot(fittedValues, aes(y=est, x=moyr, color=run_id, group=run_id)) + 
+	geom_line(size=1.25) + 
+	geom_point(aes(y=cases), color='#2D358E') + 
+	geom_vline(xintercept=as.numeric(as.Date('2013-04-01')), linetype=5, color='#C0C0C0') +
+	annotate('text', label='PCV Introduction', x=as.Date('2013-04-01'), y=Inf, hjust=1.5, size=3, hjust=1, vjust=-.25, angle=90) +
+	facet_wrap(~outcome_label, scales='free_y') + 
+	labs(title='Fitted Values at Varying Window Length', y='Expected Cases', x='') + 
+	scale_color_gradientn('Window Width', colors=colors2) + 
 	theme_bw()
 # ---------------------------------------------------------------------------------------------------------
