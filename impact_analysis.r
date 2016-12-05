@@ -64,7 +64,7 @@ source(paste0(codeDir, 'graph.r'))
 root = 'J:/Project/Evaluation/GAVI/Mozambique/pcv_impact/'
 
 # graph files
-itsOutcomeFile = paste0(root, 'output/its_results', run_name, '.pdf')
+itsFile = paste0(root, 'output/its_results', run_name, '.pdf')
 bmaFile = paste0(root, 'output/bma_results', run_name, '.pdf')
 
 # list of outcome variables
@@ -150,7 +150,7 @@ for(o in seq(length(outcomes))) {
 
 # basic ITS by outcome
 if (graphITS) { 
-	pdf(itsOutcomeFile, height=6, width=10)
+	pdf(itsFile, height=6, width=10)
 	for(o in seq(length(outcomes))) plot(graph(itsOutput=itsOutcomeResults[[o]], quarterly=FALSE))
 	dev.off()
 }
