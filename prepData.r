@@ -14,7 +14,7 @@
 # - more tests on input data (variable names, order etc)
 
 # Define function
-prepData = function(dir=NULL) {
+prepData = function(dir=NULL, outFile=NULL) {
 	
 	# ------------------------------------------------------------
 	# Handle inputs
@@ -80,8 +80,10 @@ prepData = function(dir=NULL) {
 	# -----------------------------------------------------------------------------
 	
 	
-	# ---------------
-	# Return output
+	# ----------------------
+	# Return/save output
+	inputData = data
+	save(inputData, file=outFile)
 	return(data)
-	# ---------------
+	# ----------------------
 }
