@@ -21,6 +21,7 @@
 
 # To do
 # - use counterfactual to estimate effect size, not fitted values at start of window
+# - return all NA if the model fails
 
 # Define function
 its = function(data=NULL, outcome=NULL, cutpoint=NULL, slope=NULL, newEffectDate=NULL) {
