@@ -17,19 +17,20 @@
 # 8. saveBMADiagnostics - (logical) whether to write lots of other BMA graphs to the same pdf (superseded by graphBMA)
 # 9. quarterly - (logical) whether to display average cases per quarter (TRUE) or total cases per month
 # 10. rePrepData - (logical) whether to re-run the prep code or just load the file from the last run
+# 11. leadInDate - (date) any data before this date will be dropped
 # --------------------------------------------------------------------------------------------------------------------
 
 # wrap as a function (arguments will over-ride settings below)
 impactAnalysis = function(cutpoints=as.Date(c('2013-04-01', '2014-01-01')), slope=TRUE, 
 							new_effect_date=as.Date('2016-06-01'), bma_dual=FALSE, 
 							run_name='', saveITS=FALSE, saveBMA=TRUE, saveBMADiagnostics=FALSE, 
-							quarterly=TRUE, rePrepData=FALSE) { 
+							quarterly=TRUE, rePrepData=FALSE, leadInDate=as.Date('2008-01-01')) {
 	
 	# --------------------------------------------------------------
 	# Assign arguments globally (don't hate)
 	args = c('cutpoints', 'slope', 'new_effect_date', 'bma_dual', 
 			'run_name', 'saveITS', 'saveBMA', 'saveBMADiagnostics',
-			'quarterly', 'rePrepData')
+			'quarterly', 'rePrepData', 'leadInDate')
 	for(arg in args)  assign(arg, get(arg), envir=globalenv())
 	# --------------------------------------------------------------
 	
