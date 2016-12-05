@@ -4,7 +4,10 @@
 ##### Code structure:
 1. impact_analysis.r
 
-   Main code that executes full analysis
+   Main script that executes full analysis, has a battery of settings at the start to control behavior
+   Outputs:
+   * .rdata files in /data/output
+   * .pdf graph files in /visualizations
 
 2. prepData.r
 
@@ -65,6 +68,12 @@
    Outputs:  
    * p - a ggplot graph
 
+6. sensitivity_analysis.r
+
+   Script that assembles numerous model outputs and re-graphs them together
+   Output:
+   * file at /visualizations/sensitivity_analysis.pdf
+	
    
 ##### Data formats:
 1. 'prepped' format
