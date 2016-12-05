@@ -40,6 +40,15 @@ bma_dual = TRUE
 # run_name - (character) extra information to describe this run. Alters file names
 # current accepted usage: ''
 run_name = '_3peice_w_modeluncertainty'
+
+# graphITS - (logical) whether to write a pdf containing graphs from the basic ITS
+graphITS = FALSE
+
+# graphITS - (logical) whether to write a pdf containing graphs from the BMA
+graphBMA = TRUE
+
+# graphBMADiagnostics - (logical) whether to write lots of other BMA graphs to the same pdf (superseded by graphBMA)
+graphBMADiagnostics = FALSE
 # --------------------------------------------------------------------------------------
 
 
@@ -146,26 +155,33 @@ for(o in seq(length(outcomes))) {
 # Graph
 
 # basic ITS by outcome
-pdf(itsOutcomeFile, height=6, width=10)
-for(o in seq(length(outcomes))) plot(graph(itsOutput=itsOutcomeResults[[o]], quarterly=TRUE))
-dev.off()
+if (graphITS) { 
+	pdf(itsOutcomeFile, height=6, width=10)
+	for(o in seq(length(outcomes))) plot(graph(itsOutput=itsOutcomeResults[[o]], quarterly=FALSE))
+	dev.off()
+}
 
 # BMA
-pdf(bmaFile, height=6, width=10)
+if (graphBMA) { 
+	pdf(bmaFile, height=6, width=10)
 
-# graph bma result
-for(o in seq(length(outcomes))) plot(graph(itsOutput=bmaResults[[o]], quarterly=TRUE))
+	# graph bma result
+	for(o in seq(length(outcomes))) plot(graph(itsOutput=bmaResults[[o]], quarterly=FALSE))
 
-# # graph bma weights, effects and uncertainty
-# tmpData = copy(bmaResults$stats)
-# tmpData[, effect:=100-(exp(effect)*100)]
-# setnames(tmpData, c('weight', 'effect', 'effect_se'), c('Model Weight', '% Reduction', 'Effect Standard Error'))
-# tmpData = melt(tmpData, id.vars='cutpoint', measure.vars=c('Model Weight', '% Reduction', 'Effect Standard Error'))
-# ggplot(tmpData, aes(y=value, x=cutpoint)) +
-		# geom_line() + geom_point() + facet_wrap(~variable, scales='free') +
-		# labs(title='BMA Weights', y='Weight (Uniform Prior)', x='Cutpoint') + theme_bw()
-		
-# # graph individual results that went into bma
-# for(c in seq(length(itsCutpointResults))) plot(graph(itsOutput=itsCutpointResults[[c]], quarterly=TRUE))
-dev.off()
+	if(graphBMADiagnostics) { 
+		# graph bma weights, effects and uncertainty
+		tmpData = copy(bmaResults$stats)
+		tmpData[, effect:=100-(exp(effect)*100)]
+		setnames(tmpData, c('weight', 'effect', 'effect_se'), c('Model Weight', '% Reduction', 'Effect Standard Error'))
+		tmpData = melt(tmpData, id.vars='cutpoint', measure.vars=c('Model Weight', '% Reduction', 'Effect Standard Error'))
+		ggplot(tmpData, aes(y=value, x=cutpoint)) +
+				geom_line() + geom_point() + facet_wrap(~variable, scales='free') +
+				labs(title='BMA Weights', y='Weight (Uniform Prior)', x='Cutpoint') + theme_bw()
+				
+		# graph individual results that went into bma
+		for(c in seq(length(itsCutpointResults))) plot(graph(itsOutput=itsCutpointResults[[c]], quarterly=TRUE))
+	}
+
+	dev.off()
+}
 # --------------------------------------------------------------------------------------------------------------
