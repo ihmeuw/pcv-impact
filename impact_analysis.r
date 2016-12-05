@@ -61,7 +61,8 @@ source(paste0(codeDir, 'bma.r'))
 source(paste0(codeDir, 'graph.r'))
 
 # root input/output directory
-root = 'J:/Project/Evaluation/GAVI/Mozambique/pcv_impact/'
+j = ifelse(Sys.info()[1]=='Windows', 'J:', '/home/j')
+root = paste0(j, '/Project/Evaluation/GAVI/Mozambique/pcv_impact/')
 
 # output data files
 itsOutputFile = paste0(root, 'data/output/its_results', run_name, '.rdata')
