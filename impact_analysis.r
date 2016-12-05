@@ -195,10 +195,10 @@ impactAnalysis = function(cutpoints=as.Date(c('2013-04-01', '2014-01-01')), slop
 						labs(title='BMA Weights', y='Weight (Uniform Prior)', x='Window End') + theme_bw()
 				}
 				print(p)
+			}
 				
 				# graph individual results that went into bma
 				for(c in seq(length(bmaInput))) plot(graph(itsOutput=bmaInput[[c]], quarterly=quarterly))
-			}
 		}
 		
 		dev.off()
