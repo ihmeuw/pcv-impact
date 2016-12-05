@@ -61,7 +61,7 @@ modelOutput = lapply(endDates, function(endDate) {
 
 
 # -----------------------------------------------------------------------------------------
-# Load/prep data
+# Prep data
 
 # assemble effect estimates into a workable data table
 assembleData = function(objName) { 
@@ -83,7 +83,8 @@ effectSizes = assembleData('effect_size')
 # prep effect sizes/labels
 effectSizes[, est:=c('Estimate', 'Upper', 'Lower', 'se')]
 effectSizes = effectSizes[est!='se']
-effectSizes[, run_id:=match(run, endDates)]
+effectSizes[, id:=seq_len(.N)]
+effectSizes[, run_id:=length(seq(from=as.Date('2013-04-01'), to=run, by='month'))-1, by='id']
 effectSizes[, effect:=(exp(effect)*100)-100]
 effectSizes[outcome=='ipd_cases', outcome_label:='All IPD Cases']
 effectSizes[outcome=='ipd_pcv10_serotype_cases', outcome_label:='PCV10 Serotypes']
@@ -94,7 +95,8 @@ effectSizes[outcome=='xrcp_cases', outcome_label:='All X−Ray Confirmed Cases']
 fittedValues = assembleData('data')
 
 # prep fitted values/labels
-fittedValues[, run_id:=match(run, endDates)]
+fittedValues[, id:=seq_len(.N)]
+fittedValues[, run_id:=length(seq(from=as.Date('2013-04-01'), to=run, by='month'))-1, by='id']
 fittedValues[outcome=='ipd_cases', outcome_label:='All IPD Cases']
 fittedValues[outcome=='ipd_pcv10_serotype_cases', outcome_label:='PCV10 Serotypes']
 fittedValues[outcome=='ipd_non_pcv10_serotype_cases', outcome_label:='Non−PCV10 Serotypes']
@@ -143,7 +145,7 @@ p = ggplot(effectSizes[est=='Estimate'], aes(y=effect, x=run_id)) +
 	scale_color_manual('', breaks=c('Estimate', 'Upper/Lower'), values=c(colors1[2], colors1[1])) + 
 	labs(title='Effect Size at Varying Window Width', y='Effect Size (% Change)', x='Window Width (Months)') + 
 	theme_bw()
-print(p)	
+print(p)
 	
 # graph fitted values
 p = ggplot(fittedValues, aes(y=est, x=moyr, color=run_id, group=run_id)) + 
@@ -155,7 +157,7 @@ p = ggplot(fittedValues, aes(y=est, x=moyr, color=run_id, group=run_id)) +
 	labs(title='Fitted Values at Varying Window Length', y='Expected Cases', x='') + 
 	scale_color_gradientn('Window\nWidth\n(Months)', colors=colors2) + 
 	theme_bw()
-print(p)	
+print(p)
 
 # graph fitted values for PCV10 serotypes only
 p = ggplot(fittedValues[outcome=='ipd_pcv10_serotype_cases'], aes(y=est, x=moyr, color=run_id, group=run_id)) + 
@@ -166,7 +168,7 @@ p = ggplot(fittedValues[outcome=='ipd_pcv10_serotype_cases'], aes(y=est, x=moyr,
 	labs(title='Fitted Values at Varying Window Length\nPCV10 Serotypes', y='Expected Cases', x='') + 
 	scale_color_gradientn('Window\nWidth\n(Months)', colors=colors2) + 
 	theme_bw()
-print(p)	
+print(p)
 
 # close pdf
 dev.off()
