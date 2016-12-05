@@ -15,8 +15,8 @@
 # 6. saveITS - (logical) whether to save output from the basic ITS
 # 7. saveBMA - (logical) whether to save output from the BMA
 # 8. saveBMADiagnostics - (logical) whether to write lots of other BMA graphs to the same pdf (superseded by graphBMA)
-# 8. quarterly - (logical) whether to display average cases per quarter (TRUE) or total cases per month
-# 8. rePrepData - (logical) whether to re-run the prep code or just load the file from the last run
+# 9. quarterly - (logical) whether to display average cases per quarter (TRUE) or total cases per month
+# 10. rePrepData - (logical) whether to re-run the prep code or just load the file from the last run
 # --------------------------------------------------------------------------------------------------------------------
 
 # wrap as a function (arguments will over-ride settings below)
