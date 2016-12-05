@@ -20,7 +20,7 @@
 
 
 # To do
-# - improve effect size estimation when slope is specified
+# - use counterfactual to estimate effect size, not fitted values at start of window
 
 # Define function
 its = function(data=NULL, outcome=NULL, cutpoint=NULL, slope=NULL, newEffectDate=NULL) {
