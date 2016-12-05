@@ -152,13 +152,6 @@ impactAnalysis = function(cutpoints=as.Date(c('2013-04-01', '2014-01-01')), slop
 	# -----------------------------------------------------------------------------------------
 	
 	
-	# ------------------------------------------------------
-	# Save output data
-	if (saveITS) save(itsOutcomeResults, file=itsOutputFile)
-	if (saveBMA) save(bmaResults, file=bmaOutputFile)
-	# ------------------------------------------------------
-	
-	
 	# --------------------------------------------------------------------------------------------------------------
 	# Graph
 	
@@ -193,4 +186,13 @@ impactAnalysis = function(cutpoints=as.Date(c('2013-04-01', '2014-01-01')), slop
 		dev.off()
 	}
 	# --------------------------------------------------------------------------------------------------------------
+	
+	
+	# ------------------------------------------------------
+	# Save and return output data
+	if (saveITS) save(itsOutcomeResults, file=itsOutputFile)
+	if (saveBMA) save(bmaResults, file=bmaOutputFile)
+	if (saveITS & !saveBMA) return(itsOutcomeResults)
+	if (saveBMA) return(bmaResults)
+	# ------------------------------------------------------
 }
