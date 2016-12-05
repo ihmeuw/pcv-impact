@@ -46,7 +46,7 @@ graphBMADiagnostics = FALSE
 # --------------------------------------------------------------------------------------
 
 
-# -------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 # Files, directories
 
 # change to code directory
@@ -63,9 +63,13 @@ source(paste0(codeDir, 'graph.r'))
 # root input/output directory
 root = 'J:/Project/Evaluation/GAVI/Mozambique/pcv_impact/'
 
+# output data files
+itsOutputFile = paste0(root, 'data/output/its_results', run_name, '.rdata')
+bmaOutputFile = paste0(root, 'data/output/its_results', run_name, '.rdata')
+
 # graph files
-itsFile = paste0(root, 'output/its_results', run_name, '.pdf')
-bmaFile = paste0(root, 'output/bma_results', run_name, '.pdf')
+itsFile = paste0(root, 'visualizations/its_results', run_name, '.pdf')
+bmaFile = paste0(root, 'visualizations/bma_results', run_name, '.pdf')
 
 # list of outcome variables
 outcomes = c('ipd_cases', 'ipd_pcv10_serotype_cases', 
@@ -76,13 +80,13 @@ firstCut = cutpoints[1]
 lastCut = cutpoints[2]
 cutpointSeries = seq(from=firstCut, to=lastCut, by='month')
 cutpointCombinatorics = as.Date(combn(cutpointSeries, 2), origin='1970-01-01')
-# -------------------------------------------------------------------
+# ----------------------------------------------------------------------------
 
 
-# ----------------------------------------
+# ----------------------------------------------
 # Load/prep data
-inputData = prepData(paste0(root, 'data'))
-# ----------------------------------------
+inputData = prepData(paste0(root, 'data/input'))
+# ----------------------------------------------
 
 
 # -----------------------------------------------------------------------------------------
@@ -143,6 +147,13 @@ for(o in seq(length(outcomes))) {
 	bmaResults[[o]] = bma(bmaInput[i1:i2])
 }
 # -----------------------------------------------------------------------------------------
+
+
+# ------------------------------------------
+# Save output data
+save(itsOutcomeResults, file=itsOutputFile)
+save(bmaResults, file=bmaOutputFile)
+# ------------------------------------------
 
 
 # --------------------------------------------------------------------------------------------------------------
