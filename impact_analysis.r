@@ -175,17 +175,30 @@ impactAnalysis = function(cutpoints=as.Date(c('2013-04-01', '2014-01-01')), slop
 		for(o in seq(length(outcomes))) plot(graph(itsOutput=bmaResults[[o]], quarterly=quarterly))
 		
 		if(saveBMADiagnostics) { 
-			# graph bma weights, effects and uncertainty
-			tmpData = copy(bmaResults$stats)
-			tmpData[, effect:=100-(exp(effect)*100)]
-			setnames(tmpData, c('weight', 'effect', 'effect_se'), c('Model Weight', '% Reduction', 'Effect Standard Error'))
-			tmpData = melt(tmpData, id.vars='cutpoint', measure.vars=c('Model Weight', '% Reduction', 'Effect Standard Error'))
-			ggplot(tmpData, aes(y=value, x=cutpoint)) +
-					geom_line() + geom_point() + facet_wrap(~variable, scales='free') +
-					labs(title='BMA Weights', y='Weight (Uniform Prior)', x='Cutpoint') + theme_bw()
-					
-			# graph individual results that went into bma
-			for(c in seq(length(itsCutpointResults))) plot(graph(itsOutput=itsCutpointResults[[c]], quarterly=quarterly))
+			for(o in seq(length(outcomes))) { 
+				# graph bma weights, effects and uncertainty
+				tmpData = copy(bmaResults[[o]]$stats)
+				tmpData[, effect:=100-(exp(effect)*100)]
+				setnames(tmpData, c('weight', 'effect', 'effect_se'), c('Model Weight', '% Reduction', 'Effect Standard Error'))
+				idVars = 'cutpoint'
+				if (bma_dual) idVars = c(idVars, 'cutpoint2')
+				tmpData = melt(tmpData, id.vars=idVars, measure.vars=c('Model Weight', '% Reduction', 'Effect Standard Error'))
+				
+				if (!bma_dual) {
+					p = ggplot(tmpData, aes(y=value, x=cutpoint)) +
+						geom_point() + facet_wrap(~variable, scales='free') +
+						labs(title='BMA Weights', y='Weight (Uniform Prior)', x='Cutpoint') + theme_bw()
+				}
+				if (bma_dual) {
+					p = ggplot(tmpData, aes(y=value, x=cutpoint2, color=cutpoint)) +
+						geom_point() + facet_wrap(~variable, scales='free') +
+						labs(title='BMA Weights', y='Weight (Uniform Prior)', x='Window End') + theme_bw()
+				}
+				print(p)
+				
+				# graph individual results that went into bma
+				for(c in seq(length(itsCutpointResults))) plot(graph(itsOutput=bmaInput[[c]], quarterly=quarterly))
+			}
 		}
 		
 		dev.off()
