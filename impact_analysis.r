@@ -31,18 +31,18 @@ library(ggplot2)
 #	* current accepted usage: FALSE
 # 5. run_name - (character) extra information to describe this run. Alters file names
 #	* current accepted usage: ''
-# 6. graphITS - (logical) whether to write a pdf containing graphs from the basic ITS
-# 7. graphBMA - (logical) whether to write a pdf containing graphs from the BMA
-# 8. graphBMADiagnostics - (logical) whether to write lots of other BMA graphs to the same pdf (superseded by graphBMA)
+# 6. saveITS - (logical) whether to save output from the basic ITS
+# 7. saveBMA - (logical) whether to save output from the BMA
+# 8. saveBMADiagnostics - (logical) whether to write lots of other BMA graphs to the same pdf (superseded by graphBMA)
 
-cutpoints = as.Date(c('010413', '010416'), '%d%m%y')
+cutpoints = as.Date(c('010413', '010216'), '%d%m%y')
 slope = TRUE
 new_effect_date = as.Date('2016-06-01')
 bma_dual = TRUE
-run_name = '_3peice_max1'
-graphITS = FALSE
-graphBMA = TRUE
-graphBMADiagnostics = FALSE
+run_name = '_3peice_max3'
+saveITS = FALSE
+saveBMA = TRUE
+saveBMADiagnostics = FALSE
 # --------------------------------------------------------------------------------------
 
 
@@ -67,7 +67,7 @@ root = paste0(j, '/Project/Evaluation/GAVI/Mozambique/pcv_impact/')
 
 # output data files
 itsOutputFile = paste0(root, 'data/output/its_results', run_name, '.rdata')
-bmaOutputFile = paste0(root, 'data/output/its_results', run_name, '.rdata')
+bmaOutputFile = paste0(root, 'data/output/bma_results', run_name, '.rdata')
 
 # graph files
 itsFile = paste0(root, 'visualizations/its_results', run_name, '.pdf')
@@ -151,11 +151,11 @@ for(o in seq(length(outcomes))) {
 # -----------------------------------------------------------------------------------------
 
 
-# ------------------------------------------
+# ------------------------------------------------------
 # Save output data
-save(itsOutcomeResults, file=itsOutputFile)
-save(bmaResults, file=bmaOutputFile)
-# ------------------------------------------
+if (saveITS) save(itsOutcomeResults, file=itsOutputFile)
+if (saveBMA) save(bmaResults, file=bmaOutputFile)
+# ------------------------------------------------------
 
 
 # --------------------------------------------------------------------------------------------------------------
