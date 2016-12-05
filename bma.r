@@ -31,6 +31,7 @@ bma = function(itsResults) {
 	lowerVar = paste0(outcome, '_pred_lower')
 	predVar = paste0(outcome, '_pred')
 	predSeVar = paste0(outcome, '_pred_se')
+	newEffectDate = itsResults[[1]]$newEffectDate
 	
 	# isolate the datasets/gof in the argument into one big data table
 	data = data.table(NULL)
@@ -91,6 +92,6 @@ bma = function(itsResults) {
 	# Return output
 	return(list('data'=meanData, 'outcome'=outcome, 
 				'cutpoint'=as.Date(c(min(cutpoints), max(cutpoints)), origin='1970-01-01'), 
-				'effect_size'=effect_size, 'stats'=stats, newEffectDate=itsResults[[1]]$newEffectDate))
+				'effect_size'=effect_size, 'stats'=stats, newEffectDate=newEffectDate))
 	# -------------------------------------------------------------------------------------------------
 }
