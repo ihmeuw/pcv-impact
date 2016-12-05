@@ -50,8 +50,8 @@ graphBMADiagnostics = FALSE
 # Files, directories
 
 # change to code directory
-if (Sys.info()[1]!='Unix') codeDir = 'C:/local/mixed-methods-analysis/pcv_impact/code/'
-if (Sys.info()[1]=='Unix') codeDir = '.'
+if (Sys.info()[1]=='Windows') codeDir = 'C:/local/mixed-methods-analysis/pcv_impact/code/'
+if (Sys.info()[1]!='Windows') codeDir = '.'
 setwd(codeDir)
 
 # load functions
