@@ -85,7 +85,6 @@ impactAnalysis = function(cutpoints=as.Date(c('2013-04-01', '2014-01-01')), slop
 	firstCut = cutpoints[1]
 	lastCut = cutpoints[2]
 	cutpointSeries = seq(from=firstCut, to=lastCut, by='month')
-	cutpointCombinatorics = as.Date(combn(cutpointSeries, 2), origin='1970-01-01')
 	# ----------------------------------------------------------------------------
 	
 	
@@ -124,12 +123,13 @@ impactAnalysis = function(cutpoints=as.Date(c('2013-04-01', '2014-01-01')), slop
 	# basic ITS across all possible pairs of cutpoints 
 	# (within the window defined by the first and last cutpoints)
 	if (bma_dual) { 
-		itsCutpointResults2 = vector('list', ncol(cutpointCombinatorics)*length(outcomes))
+		cutpointSeries = cutpointSeries[-1] # drop the first point in the series
+		itsCutpointResults2 = vector('list', length(cutpointSeries)*length(outcomes)) 
 		i=1
 		for(o in seq(length(outcomes))) {
-			for(c in seq(ncol(cutpointCombinatorics))) {
+			for(c in seq(length(cutpointSeries))) {
 				itsCutpointResults2[[i]] = its(data=inputData, outcome=outcomes[[o]], 
-					cutpoint=cutpointCombinatorics[,c], slope=slope, newEffectDate=new_effect_date)
+					cutpoint=c(firstCut, cutpointSeries[c]), slope=slope, newEffectDate=new_effect_date)
 				i=i+1
 			}
 		}
@@ -141,14 +141,8 @@ impactAnalysis = function(cutpoints=as.Date(c('2013-04-01', '2014-01-01')), slop
 	if (bma_dual) bmaInput = itsCutpointResults2
 	for(o in seq(length(outcomes))) { 
 		# indices of combinatorics for this outcome
-		if (!bma_dual) { 
-			i1 = (o-1)*length(cutpointSeries) + 1
-			i2 = o*length(cutpointSeries)
-		}
-		if (bma_dual) { 
-			i1 = (o-1)*ncol(cutpointCombinatorics) + 1
-			i2 = o*ncol(cutpointCombinatorics)
-		}
+		i1 = (o-1)*length(cutpointSeries) + 1
+		i2 = o*length(cutpointSeries)
 		
 		# average models for the current outcome
 		bmaResults[[o]] = bma(bmaInput[i1:i2])
