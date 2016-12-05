@@ -17,7 +17,7 @@
 # 8. saveBMADiagnostics - (logical) whether to write lots of other BMA graphs to the same pdf (superseded by graphBMA)
 # 9. quarterly - (logical) whether to display average cases per quarter (TRUE) or total cases per month
 # 10. rePrepData - (logical) whether to re-run the prep code or just load the file from the last run
-# 11. leadInDate - (date) any data before this date will be dropped
+# 11. leadInDate - (date) any data before this date will be dropped (if rePrepData==TRUE)
 # --------------------------------------------------------------------------------------------------------------------
 
 # wrap as a function (arguments will over-ride settings below)
@@ -197,7 +197,7 @@ impactAnalysis = function(cutpoints=as.Date(c('2013-04-01', '2014-01-01')), slop
 				print(p)
 				
 				# graph individual results that went into bma
-				for(c in seq(length(itsCutpointResults))) plot(graph(itsOutput=bmaInput[[c]], quarterly=quarterly))
+				for(c in seq(length(bmaInput))) plot(graph(itsOutput=bmaInput[[c]], quarterly=quarterly))
 			}
 		}
 		
