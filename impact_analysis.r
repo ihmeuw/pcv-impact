@@ -16,20 +16,20 @@
 # 7. saveBMA - (logical) whether to save output from the BMA
 # 8. saveBMADiagnostics - (logical) whether to write lots of other BMA graphs to the same pdf (superseded by graphBMA)
 # 8. quarterly - (logical) whether to display average cases per quarter (TRUE) or total cases per month
+# 8. rePrepData - (logical) whether to re-run the prep code or just load the file from the last run
 # --------------------------------------------------------------------------------------------------------------------
-
 
 # wrap as a function (arguments will over-ride settings below)
 impactAnalysis = function(cutpoints=as.Date(c('2013-04-01', '2014-01-01')), slope=TRUE, 
 							new_effect_date=as.Date('2016-06-01'), bma_dual=FALSE, 
 							run_name='', saveITS=FALSE, saveBMA=TRUE, saveBMADiagnostics=FALSE, 
-							quarterly=TRUE) { 
+							quarterly=TRUE, rePrepData=FALSE) { 
 	
 	# --------------------------------------------------------------
 	# Assign arguments globally (don't hate)
 	args = c('cutpoints', 'slope', 'new_effect_date', 'bma_dual', 
 			'run_name', 'saveITS', 'saveBMA', 'saveBMADiagnostics',
-			'quarterly')
+			'quarterly', 'rePrepData')
 	for(arg in args)  assign(arg, get(arg), envir=globalenv())
 	# --------------------------------------------------------------
 	
@@ -66,6 +66,9 @@ impactAnalysis = function(cutpoints=as.Date(c('2013-04-01', '2014-01-01')), slop
 	j = ifelse(Sys.info()[1]=='Windows', 'J:', '/home/j')
 	root = paste0(j, '/Project/Evaluation/GAVI/Mozambique/pcv_impact/')
 	
+	# prepped data file
+	preppedDataFile = paste0(root, 'data/output/prepped_data.rdata')
+	
 	# output data files
 	itsOutputFile = paste0(root, 'data/output/its_results', run_name, '.rdata')
 	bmaOutputFile = paste0(root, 'data/output/bma_results', run_name, '.rdata')
@@ -86,10 +89,11 @@ impactAnalysis = function(cutpoints=as.Date(c('2013-04-01', '2014-01-01')), slop
 	# ----------------------------------------------------------------------------
 	
 	
-	# ----------------------------------------------
+	# -------------------------------------------------------------------------------
 	# Load/prep data
-	inputData = prepData(paste0(root, 'data/input'))
-	# ----------------------------------------------
+	if (rePrepData) inputData = prepData(paste0(root, 'data/input'), preppedDataFile)
+	if (!rePrepData) load(preppedDataFile)
+	# -------------------------------------------------------------------------------
 	
 	
 	# -----------------------------------------------------------------------------------------
