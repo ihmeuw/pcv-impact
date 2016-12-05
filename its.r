@@ -20,7 +20,6 @@
 
 
 # To do
-# - use counterfactual to estimate effect size, not fitted values at start of window
 # - return all NA if the model fails
 
 # Define function
@@ -139,7 +138,7 @@ its = function(data=NULL, outcome=NULL, cutpoint=NULL, slope=NULL, newEffectDate
 	# note: this is based on the prediction/prediction interval, not the regression coefficients
 	if (slope | !is.null(newEffectDate)) {
 		refDate = start
-		if (!is.null(newEffectDate)) refDate = newEffectDate
+		if (!is.null(newEffectDate)) refDate = newEffectDate # use counterfactual as reference date
 		effect = log(data[[paste0(outcome,'_pred')]][data$moyr==refDate]) - log(data[[paste0(outcome,'_pred_cf')]][data$moyr==refDate])
 		effect_lower = log(data[[paste0(outcome,'_pred_upper')]][data$moyr==refDate]) - log(data[[paste0(outcome,'_pred_cf')]][data$moyr==refDate])
 		effect_upper = log(data[[paste0(outcome,'_pred_lower')]][data$moyr==refDate]) - log(data[[paste0(outcome,'_pred_cf')]][data$moyr==refDate])
