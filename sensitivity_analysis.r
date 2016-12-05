@@ -24,7 +24,9 @@ library(ggplot2)
 source('impact_analysis.r')
 
 # settings
-run_name = 'window_variants_3peice'
+run_name = 'window_variants_3piece'
+ind_run_name = '_3piece'
+reRunModels = FALSE
 
 # change to code directory
 if (Sys.info()[1]=='Windows') codeDir = 'C:/local/mixed-methods-analysis/pcv_impact/code/'
@@ -39,7 +41,7 @@ root = paste0(j, '/Project/Evaluation/GAVI/Mozambique/pcv_impact/')
 graphFile = paste0(root, 'visualizations/sensitivity_', run_name, '.pdf')
 
 # output data files (from impact_analysis.r)
-outputFileStub = paste0(root, 'data/output/bma_results_')
+outputFileStub = paste0(root, 'data/output/bma_results')
 # -----------------------------------------------------------------------------------------
 
 
@@ -47,16 +49,27 @@ outputFileStub = paste0(root, 'data/output/bma_results_')
 # Run impact_analysis.r on varying windows
 
 # store window end dates
-endDates = seq.Date(from=as.Date('2013-05-01'), to=as.Date('2016-04-01'), by='month')
+endDates = seq(from=as.Date('2013-05-01'), to=as.Date('2016-04-01'), by='quarter')
 
 # run for each date
-modelOutput = lapply(endDates, function(endDate) { 
-	cutpoints = c(as.Date('2013-01-01'), endDate)
-	bmaResults = impactAnalysis(cutpoints=cutpoints, 
-									run_name=as.character(endDate), 
-									bma_dual=TRUE)
-	return(bmaResults)
-})
+if (reRunModels) { 
+	modelOutput = lapply(endDates, function(endDate) { 
+		cutpoints = c(as.Date('2013-04-01'), endDate)
+		bmaResults = impactAnalysis(cutpoints=cutpoints, 
+										run_name=paste0(as.character(endDate), ind_run_name), 
+										bma_dual=FALSE)
+		return(bmaResults)
+	})
+}
+
+# load all files from a previous run
+if (!reRunModels) { 
+	files = paste0(outputFileStub, endDates, ind_run_name, '.rdata')
+	modelOutput = lapply(files, function(x) { 
+		load(x)
+		return(bmaResults)
+	})
+}
 # -------------------------------------------------------------------------------------
 
 
@@ -88,8 +101,10 @@ effectSizes[, run_id:=length(seq(from=as.Date('2013-04-01'), to=run, by='month')
 effectSizes[, effect:=(exp(effect)*100)-100]
 effectSizes[outcome=='ipd_cases', outcome_label:='All IPD Cases']
 effectSizes[outcome=='ipd_pcv10_serotype_cases', outcome_label:='PCV10 Serotypes']
-effectSizes[outcome=='ipd_non_pcv10_serotype_cases', outcome_label:='Non−PCV10 Serotypes']
-effectSizes[outcome=='xrcp_cases', outcome_label:='All X−Ray Confirmed Cases']
+effectSizes[outcome=='ipd_non_pcv10_serotype_cases', outcome_label:='Non-PCV10 Serotypes']
+effectSizes[outcome=='xrcp_cases', outcome_label:='All X-Ray Confirmed Cases']
+effectSizes[effect>250, effect:=NA]
+effectSizes[effect< -250, effect:=NA]
 
 # assemble fitted values into a workable data table
 fittedValues = assembleData('data')
@@ -99,8 +114,8 @@ fittedValues[, id:=seq_len(.N)]
 fittedValues[, run_id:=length(seq(from=as.Date('2013-04-01'), to=run, by='month'))-1, by='id']
 fittedValues[outcome=='ipd_cases', outcome_label:='All IPD Cases']
 fittedValues[outcome=='ipd_pcv10_serotype_cases', outcome_label:='PCV10 Serotypes']
-fittedValues[outcome=='ipd_non_pcv10_serotype_cases', outcome_label:='Non−PCV10 Serotypes']
-fittedValues[outcome=='xrcp_cases', outcome_label:='All X−Ray Confirmed Cases']
+fittedValues[outcome=='ipd_non_pcv10_serotype_cases', outcome_label:='Non-PCV10 Serotypes']
+fittedValues[outcome=='xrcp_cases', outcome_label:='All X-Ray Confirmed Cases']
 fittedValues[outcome=='ipd_cases', est:=ipd_cases_pred]
 fittedValues[outcome=='ipd_pcv10_serotype_cases', est:=ipd_pcv10_serotype_cases_pred]
 fittedValues[outcome=='ipd_non_pcv10_serotype_cases', est:=ipd_non_pcv10_serotype_cases_pred]
