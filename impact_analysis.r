@@ -196,9 +196,9 @@ impactAnalysis = function(cutpoints=as.Date(c('2013-04-01', '2014-01-01')), slop
 				}
 				print(p)
 			}
-				
-				# graph individual results that went into bma
-				for(c in seq(length(bmaInput))) plot(graph(itsOutput=bmaInput[[c]], quarterly=quarterly))
+			
+			# graph individual results that went into bma
+			for(c in seq(length(bmaInput))) plot(graph(itsOutput=bmaInput[[c]], quarterly=quarterly))
 		}
 		
 		dev.off()
