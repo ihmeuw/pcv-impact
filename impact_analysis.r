@@ -15,18 +15,21 @@
 # 6. saveITS - (logical) whether to save output from the basic ITS
 # 7. saveBMA - (logical) whether to save output from the BMA
 # 8. saveBMADiagnostics - (logical) whether to write lots of other BMA graphs to the same pdf (superseded by graphBMA)
+# 8. quarterly - (logical) whether to display average cases per quarter (TRUE) or total cases per month
 # --------------------------------------------------------------------------------------------------------------------
 
 
 # wrap as a function (arguments will over-ride settings below)
 impactAnalysis = function(cutpoints=as.Date(c('2013-04-01', '2014-01-01')), slope=TRUE, 
 							new_effect_date=as.Date('2016-06-01'), bma_dual=FALSE, 
-							run_name='', saveITS=FALSE, saveBMA=TRUE, saveBMADiagnostics=FALSE) { 
+							run_name='', saveITS=FALSE, saveBMA=TRUE, saveBMADiagnostics=FALSE, 
+							quarterly=TRUE) { 
 	
 	# --------------------------------------------------------------
 	# Assign arguments globally (don't hate)
 	args = c('cutpoints', 'slope', 'new_effect_date', 'bma_dual', 
-			'run_name', 'saveITS', 'saveBMA', 'saveBMADiagnostics')
+			'run_name', 'saveITS', 'saveBMA', 'saveBMADiagnostics',
+			'quarterly')
 	for(arg in args)  assign(arg, get(arg), envir=globalenv())
 	# --------------------------------------------------------------
 	
@@ -162,7 +165,7 @@ impactAnalysis = function(cutpoints=as.Date(c('2013-04-01', '2014-01-01')), slop
 	# basic ITS by outcome
 	if (saveITS) { 
 		pdf(itsFile, height=6, width=10)
-		for(o in seq(length(outcomes))) plot(graph(itsOutput=itsOutcomeResults[[o]], quarterly=FALSE))
+		for(o in seq(length(outcomes))) plot(graph(itsOutput=itsOutcomeResults[[o]], quarterly=quarterly))
 		dev.off()
 	}
 	
@@ -171,7 +174,7 @@ impactAnalysis = function(cutpoints=as.Date(c('2013-04-01', '2014-01-01')), slop
 		pdf(bmaFile, height=6, width=10)
 		
 		# graph bma result
-		for(o in seq(length(outcomes))) plot(graph(itsOutput=bmaResults[[o]], quarterly=FALSE))
+		for(o in seq(length(outcomes))) plot(graph(itsOutput=bmaResults[[o]], quarterly=quarterly))
 		
 		if(saveBMADiagnostics) { 
 			# graph bma weights, effects and uncertainty
@@ -184,7 +187,7 @@ impactAnalysis = function(cutpoints=as.Date(c('2013-04-01', '2014-01-01')), slop
 					labs(title='BMA Weights', y='Weight (Uniform Prior)', x='Cutpoint') + theme_bw()
 					
 			# graph individual results that went into bma
-			for(c in seq(length(itsCutpointResults))) plot(graph(itsOutput=itsCutpointResults[[c]], quarterly=TRUE))
+			for(c in seq(length(itsCutpointResults))) plot(graph(itsOutput=itsCutpointResults[[c]], quarterly=quarterly))
 		}
 		
 		dev.off()
