@@ -60,24 +60,10 @@ bma = function(itsResults) {
 	data[, weight:=exp(-.5*(gof-min(gof)))]
 	stats[, weight:=exp(-.5*(gof-min(gof)))]
 	
-	# average stats
-	effect_size = stats[, list(effect=mean(effect, weight=weight))]
-	
 	# average predictions
 	meanData = suppressWarnings(data[, lapply(.SD, mean, weight=weight, na.rm=TRUE), by='moyr', 
 				.SDcols=names(data)[!names(data) %in% c('moyr', 'weight', 'gof')]])
-	
-	# estimate effect size standard errors including model variance 
-	# not between-model variance, but squared error from the midpoint estimate according to Dan Weinberger's SAS code
-	stats[, model_variance:=(effect-as.numeric(effect_size))^2]
-	effect_size = cbind(effect_size, stats[, list(se=mean(effect_se^2+model_variance, weight=weight))])
-	
-	# effect size uncertainty intervals
-	effect_size[, upper:=effect+1.95996*se]
-	effect_size[, lower:=effect-1.95996*se]
-	effect_size = suppressWarnings(melt(effect_size[, c('effect', 'lower', 'upper', 'se'), with=F], value.name='effect'))
-	effect_size$variable = NULL
-	
+			
 	# estimate prediction standard errors
 	tmpData = meanData[, c('moyr', predVar), with=FALSE]
 	setnames(tmpData, predVar, 'mean')
@@ -90,6 +76,14 @@ bma = function(itsResults) {
 	meanData = merge(meanData, meanSe, 'moyr')
 	meanData[, (upperVar):=exp(log(get(predVar))+1.95996*se)]
 	meanData[, (lowerVar):=exp(log(get(predVar))-1.95996*se)]
+	
+	# recompute effect size using prediction interval instead of mean standard error
+	cf = log(meanData[moyr==newEffectDate][[paste0(outcome,'_pred_cf')]])
+	effect = log(meanData[moyr==newEffectDate][[paste0(outcome, '_pred')]]) - cf
+	effect_lower = log(meanData[moyr==newEffectDate][[paste0(outcome, '_pred_upper')]]) - cf
+	effect_upper = log(meanData[moyr==newEffectDate][[paste0(outcome, '_pred_lower')]]) - cf
+	effect_se = (effect_upper-effect)/1.95996
+	effect_size = data.table('effect'=c(effect, effect_upper, effect_lower, effect_se))
 	# -----------------------------------------------------------------------------------------------------------
 	
 	
