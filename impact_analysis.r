@@ -21,33 +21,27 @@ library(ggplot2)
 # --------------------------------------------------------------------------------------
 # Settings
 
-# cutpoints - (date vector) one or two dates (not tested for all use cases with 1 cutpoint)
-# current accepted usage: '010413', '010114'
+# 1. cutpoints - (date vector) one or two dates (not tested for all use cases with 1 cutpoint)
+#	* current accepted usage: '010413', '010114'
+# 2. slope - (logical) whether to have an intercept shift at the cutpoints or a slope shift
+#	* current accepted usage: TRUE
+# 3. new_effect_date - date at which to compute the effect size. NULL defaults to cutpoint 1
+#	* current accepted usage: '2016-06-01'
+# 4. bma_dual - (logical) whether to run BMA on ITS models that use two or one cutpoints
+#	* current accepted usage: FALSE
+# 5. run_name - (character) extra information to describe this run. Alters file names
+#	* current accepted usage: ''
+# 6. graphITS - (logical) whether to write a pdf containing graphs from the basic ITS
+# 7. graphBMA - (logical) whether to write a pdf containing graphs from the BMA
+# 8. graphBMADiagnostics - (logical) whether to write lots of other BMA graphs to the same pdf (superseded by graphBMA)
+
 cutpoints = as.Date(c('010413', '010114'), '%d%m%y')
-
-# slope - (logical) whether to have an intercept shift at the cutpoints or a slope shift
-# current accepted usage: TRUE
 slope = TRUE
-
-# newEffectDate - date at which to compute the effect size. NULL defaults to cutpoint 1
-# current accepted usage: '2016-06-01'
 new_effect_date = as.Date('2016-06-01')
-
-# bma_dual - (logical) whether to run BMA on ITS models that use two or one cutpoints
-# current accepted usage: FALSE
 bma_dual = TRUE
-
-# run_name - (character) extra information to describe this run. Alters file names
-# current accepted usage: ''
 run_name = '_3peice_w_modeluncertainty'
-
-# graphITS - (logical) whether to write a pdf containing graphs from the basic ITS
 graphITS = FALSE
-
-# graphITS - (logical) whether to write a pdf containing graphs from the BMA
 graphBMA = TRUE
-
-# graphBMADiagnostics - (logical) whether to write lots of other BMA graphs to the same pdf (superseded by graphBMA)
 graphBMADiagnostics = FALSE
 # --------------------------------------------------------------------------------------
 
