@@ -35,11 +35,11 @@ library(ggplot2)
 # 7. graphBMA - (logical) whether to write a pdf containing graphs from the BMA
 # 8. graphBMADiagnostics - (logical) whether to write lots of other BMA graphs to the same pdf (superseded by graphBMA)
 
-cutpoints = as.Date(c('010413', '010114'), '%d%m%y')
+cutpoints = as.Date(c('010413', '010416'), '%d%m%y')
 slope = TRUE
 new_effect_date = as.Date('2016-06-01')
 bma_dual = TRUE
-run_name = '_3peice_w_modeluncertainty'
+run_name = '_3peice_max1'
 graphITS = FALSE
 graphBMA = TRUE
 graphBMADiagnostics = FALSE
@@ -50,7 +50,8 @@ graphBMADiagnostics = FALSE
 # Files, directories
 
 # change to code directory
-codeDir = 'C:/local/mixed-methods-analysis/pcv_impact/code/'
+if (Sys.info()[1]!='Unix') codeDir = 'C:/local/mixed-methods-analysis/pcv_impact/code/'
+if (Sys.info()[1]=='Unix') codeDir = '.'
 setwd(codeDir)
 
 # load functions
