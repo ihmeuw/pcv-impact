@@ -24,8 +24,8 @@ library(ggplot2)
 source('impact_analysis.r')
 
 # settings
-run_name = 'window_variants_3piece'
-ind_run_name = '_3piece'
+run_name = 'lead_in_variants_2piece'
+ind_run_name = '_lead_in'
 reRunModels = FALSE
 
 # change to code directory
@@ -51,13 +51,15 @@ outputFileStub = paste0(root, 'data/output/bma_results')
 # store window end dates
 endDates = seq(from=as.Date('2013-05-01'), to=as.Date('2016-04-01'), by='quarter')
 
+# store lead in start dates
+endDates = seq(from=as.Date('2003-01-01'), to=as.Date('2012-01-01'), by='quarter')
+
 # run for each date
 if (reRunModels) { 
 	modelOutput = lapply(endDates, function(endDate) { 
-		cutpoints = c(as.Date('2013-04-01'), endDate)
-		bmaResults = impactAnalysis(cutpoints=cutpoints, 
+		bmaResults = impactAnalysis(leadInDate=endDate, 
 										run_name=paste0(as.character(endDate), ind_run_name), 
-										bma_dual=FALSE)
+										rePrepData=TRUE)
 		return(bmaResults)
 	})
 }
@@ -97,7 +99,7 @@ effectSizes = assembleData('effect_size')
 effectSizes[, est:=c('Estimate', 'Upper', 'Lower', 'se')]
 effectSizes = effectSizes[est!='se']
 effectSizes[, id:=seq_len(.N)]
-effectSizes[, run_id:=length(seq(from=as.Date('2013-04-01'), to=run, by='month'))-1, by='id']
+effectSizes[, run_id:=year(run)+((month(run)-1)/12)]
 effectSizes[, effect:=(exp(effect)*100)-100]
 effectSizes[outcome=='ipd_cases', outcome_label:='All IPD Cases']
 effectSizes[outcome=='ipd_pcv10_serotype_cases', outcome_label:='PCV10 Serotypes']
@@ -111,7 +113,7 @@ fittedValues = assembleData('data')
 
 # prep fitted values/labels
 fittedValues[, id:=seq_len(.N)]
-fittedValues[, run_id:=length(seq(from=as.Date('2013-04-01'), to=run, by='month'))-1, by='id']
+fittedValues[, run_id:=year(run)+((month(run)-1)/12)]
 fittedValues[outcome=='ipd_cases', outcome_label:='All IPD Cases']
 fittedValues[outcome=='ipd_pcv10_serotype_cases', outcome_label:='PCV10 Serotypes']
 fittedValues[outcome=='ipd_non_pcv10_serotype_cases', outcome_label:='Non-PCV10 Serotypes']
@@ -158,7 +160,7 @@ p = ggplot(effectSizes[est=='Estimate'], aes(y=effect, x=run_id)) +
 	geom_smooth(data=effectSizes[est=='Upper'], se=FALSE, aes(color='Upper/Lower'), size=1.25) + 
 	facet_wrap(~outcome_label, scales='free_y') + 
 	scale_color_manual('', breaks=c('Estimate', 'Upper/Lower'), values=c(colors1[2], colors1[1])) + 
-	labs(title='Effect Size at Varying Window Width', y='Effect Size (% Change)', x='Window Width (Months)') + 
+	labs(title='Effect Size with Varying Lead-In Period', y='Effect Size (% Change)', x='Lead-In Period (Start)') + 
 	theme_bw()
 print(p)
 	
@@ -169,8 +171,8 @@ p = ggplot(fittedValues, aes(y=est, x=moyr, color=run_id, group=run_id)) +
 	geom_vline(xintercept=as.numeric(as.Date('2013-04-01')), linetype=5, color='#C0C0C0') +
 	annotate('text', label='PCV Introduction', x=as.Date('2013-04-01'), y=Inf, hjust=1.1, size=3, hjust=1, vjust=-.25, angle=90) +
 	facet_wrap(~outcome_label, scales='free_y') + 
-	labs(title='Fitted Values at Varying Window Length', y='Expected Cases', x='') + 
-	scale_color_gradientn('Window\nWidth\n(Months)', colors=colors2) + 
+	labs(title='Fitted Values with Varying Lead-In Period', y='Expected Cases', x='') + 
+	scale_color_gradientn('Lead-In\nPeriod\n(Start)', colors=colors2) + 
 	theme_bw()
 print(p)
 
@@ -180,8 +182,8 @@ p = ggplot(fittedValues[outcome=='ipd_pcv10_serotype_cases'], aes(y=est, x=moyr,
 	geom_point(aes(y=cases), color='#2D358E') + 
 	geom_vline(xintercept=as.numeric(as.Date('2013-04-01')), linetype=5, color='#C0C0C0') +
 	annotate('text', label='PCV Introduction', x=as.Date('2013-04-01'), y=Inf, hjust=1.1, size=3, hjust=1, vjust=-.25, angle=90) +
-	labs(title='Fitted Values at Varying Window Length\nPCV10 Serotypes', y='Expected Cases', x='') + 
-	scale_color_gradientn('Window\nWidth\n(Months)', colors=colors2) + 
+	labs(title='Fitted Values with Varying Lead-In Period\nPCV10 Serotypes', y='Expected Cases', x='') + 
+	scale_color_gradientn('Lead-In\nPeriod\n(Start)', colors=colors2) + 
 	theme_bw()
 print(p)
 
