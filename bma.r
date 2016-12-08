@@ -80,7 +80,6 @@ bma = function(itsResults) {
 	
 	# recompute effect size using prediction interval instead of mean standard error
 	cf = log(meanData[moyr==newEffectDate][[paste0(outcome,'_pred_cf')]])
-	# cf = log(meanData[moyr==itsResults[[1]]$cutpoint[1]][[paste0(outcome,'_pred')]]) #this is effect estimator #2
 	effect = log(meanData[moyr==newEffectDate][[paste0(outcome, '_pred')]]) - cf
 	effect_lower = log(meanData[moyr==newEffectDate][[paste0(outcome, '_pred_upper')]]) - cf
 	effect_upper = log(meanData[moyr==newEffectDate][[paste0(outcome, '_pred_lower')]]) - cf
