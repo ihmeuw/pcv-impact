@@ -1,10 +1,19 @@
 ### PCV Impact Analysis Using Data from Manhica DSS
 #### Basic approach: interrupted time series analysis with Bayesian model averaging
 
+#### Instructions:
+1. Put all data files in [some directory]/data/input
+2. Clone this repository to your local computer
+3. Set current working directory (in R) to the location of this readme
+4. source('impact_analysis.r')
+5. impactAnalysis(root='[some directory]', rePrepData=TRUE)
+	* If no root is specified, it will assume the data are in ./data/input
+	* The default is to not re-prep the data, after running it once with rePrepData=TRUE, you shouldn't need to do that again (unless you want to re-prep the data)
+
 ##### Code structure:
 1. impact_analysis.r
 
-   Main script that executes full analysis, has a battery of settings at the start to control behavior
+   Main script that executes full analysis, has a battery of arguments to control behavior (see script)
    Outputs:
    * .rdata files in /data/output
    * .pdf graph files in /visualizations

@@ -1,9 +1,10 @@
-# -----------------------------------------------
+# -------------------------------------------------------------
 # David Phillips
 #
 # 3/1/2016
 # Analysis of PCV impact using Manhica DSS data
-# -----------------------------------------------
+# The current working directory should be the same as this code
+# -------------------------------------------------------------
 
 # --------------------------------------------------------------------------------------------------------------------
 # Arguments
@@ -18,13 +19,15 @@
 # 9. quarterly - (logical) whether to display average cases per quarter (TRUE) or total cases per month
 # 10. rePrepData - (logical) whether to re-run the prep code or just load the file from the last run
 # 11. leadInDate - (date) any data before this date will be dropped (if rePrepData==TRUE)
+# 12. root - (character) optional directory where data and output will go, defaults to IHME directory, then creating one in cwd
 # --------------------------------------------------------------------------------------------------------------------
 
 # wrap as a function (arguments will over-ride settings below)
 impactAnalysis = function(cutpoints=as.Date(c('2013-04-01', '2014-01-01')), slope=TRUE, 
 							new_effect_date=as.Date('2016-06-01'), bma_dual=TRUE, 
 							run_name='', saveITS=FALSE, saveBMA=TRUE, saveBMADiagnostics=FALSE, 
-							quarterly=TRUE, rePrepData=FALSE, leadInDate=as.Date('2008-01-01')) {
+							quarterly=TRUE, rePrepData=FALSE, leadInDate=as.Date('2008-01-01'),
+							root=NULL) {
 	
 	# --------------------------------------------------------------
 	# Assign arguments globally (don't hate)
@@ -48,24 +51,27 @@ impactAnalysis = function(cutpoints=as.Date(c('2013-04-01', '2014-01-01')), slop
 	# ------------------------
 	
 	
-	# ----------------------------------------------------------------------------
+	# -----------------------------------------------------------------------------------------------
 	# Files, directories
 	
-	# change to code directory
-	if (Sys.info()[1]=='Windows') codeDir = 'C:/local/mixed-methods-analysis/pcv_impact/code/'
-	if (Sys.info()[1]!='Windows') codeDir = './'
-	setwd(codeDir)
-	
 	# load functions
-	source(paste0(codeDir, 'prepData.r'))
-	source(paste0(codeDir, 'its.r'))
-	source(paste0(codeDir, 'bma.r'))
-	# source(paste0(codeDir, 'cpbma.r'))
-	source(paste0(codeDir, 'graph.r'))
+	source('./prepData.r')
+	source('./its.r')
+	source('./bma.r')
+	source('./graph.r')
 	
-	# root input/output directory
+	# root input/output directory on IHME file system
 	j = ifelse(Sys.info()[1]=='Windows', 'J:', '/home/j')
-	root = paste0(j, '/Project/Evaluation/GAVI/Mozambique/pcv_impact/')
+	if (!is.null(root)) root = paste0(j, '/Project/Evaluation/GAVI/Mozambique/pcv_impact/')
+	
+	# automated directory set-up for non-IHME file systems
+	if (!dir.exists(root)) { 
+		root = './'
+		if (!dir.exists(paste0(root, '/data'))) dir.create((paste0(root, '/data'))
+		if (!dir.exists(paste0(root, '/data/input'))) dir.create((paste0(root, '/data/input'))
+		if (!dir.exists(paste0(root, '/data/output'))) dir.create((paste0(root, '/data/output'))
+		if (!dir.exists(paste0(root, '/visualizations'))) dir.create((paste0(root, '/visualizations'))
+	}
 	
 	# prepped data file
 	preppedDataFile = paste0(root, 'data/output/prepped_data.rdata')
@@ -87,7 +93,7 @@ impactAnalysis = function(cutpoints=as.Date(c('2013-04-01', '2014-01-01')), slop
 	lastCut = cutpoints[2]
 	cutpointSeries = seq(from=firstCut, to=lastCut, by='month')
 	cutpointCombinatorics = as.Date(combn(cutpointSeries, 2), origin='1970-01-01')
-	# ----------------------------------------------------------------------------
+	# -----------------------------------------------------------------------------------------------
 	
 	
 	# -------------------------------------------------------------------------------
