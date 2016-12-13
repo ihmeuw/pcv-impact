@@ -48,6 +48,7 @@ impactAnalysis = function(cutpoints=as.Date(c('2013-04-01', '2014-01-01')), slop
 	library(MASS)
 	library(stats4)
 	library(ggplot2)
+	library(RColorBrewer)
 	# ------------------------
 	
 	
@@ -63,7 +64,7 @@ impactAnalysis = function(cutpoints=as.Date(c('2013-04-01', '2014-01-01')), slop
 	# root input/output directory on IHME file system
 	j = ifelse(Sys.info()[1]=='Windows', 'J:', '/home/j')
 	if (is.null(root)) root = paste0(j, '/Project/Evaluation/GAVI/Mozambique/pcv_impact')
-
+	
 	# automated directory set-up for non-IHME file systems
 	if (!file.exists(root)) { 
 		root = './'
@@ -193,12 +194,16 @@ impactAnalysis = function(cutpoints=as.Date(c('2013-04-01', '2014-01-01')), slop
 				if (!bma_dual) {
 					p = ggplot(tmpData, aes(y=value, x=cutpoint)) +
 						geom_point() + facet_wrap(~variable, scales='free') +
-						labs(title='BMA Weights', y='Weight (Uniform Prior)', x='Cutpoint') + theme_bw()
+						labs(title='BMA Constituent Models', y='Value (Uniform Prior)', x='Cutpoint') + theme_bw()
 				}
 				if (bma_dual) {
-					p = ggplot(tmpData, aes(y=value, x=cutpoint2, color=cutpoint)) +
+					colors = rep(brewer.pal(11, 'RdYlBu'),4)
+					shapes = rep(c(16,15,17,18),each=11)
+					p = ggplot(tmpData, aes(y=value, x=cutpoint, color=factor(cutpoint2), shape=factor(cutpoint2))) +
 						geom_point() + facet_wrap(~variable, scales='free') +
-						labs(title='BMA Weights', y='Weight (Uniform Prior)', x='Window End') + theme_bw()
+						labs(title='BMA Constituent Models', y='Value (Uniform Prior)', x='Window Start') + 
+						scale_color_manual('Window End', values=colors) + 
+						scale_shape_manual('Window End', values=shapes) + theme_bw()
 				}
 				print(p)
 			}
