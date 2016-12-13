@@ -37,8 +37,8 @@ bma = function(itsResults) {
 	data = data.table(NULL)
 	for(d in seq(length(itsResults))) {
 		data = rbind(data, itsResults[[d]]$data, fill=TRUE)
-		if (d==1) data[, gof:=itsResults[[d]]$gof]
-		if (d!=1) data[is.na(gof), gof:=itsResults[[d]]$gof]
+		if (d==1) data[, bic:=itsResults[[d]]$gof$bic]
+		if (d!=1) data[is.na(bic), bic:=itsResults[[d]]$gof$bic]
 	}
 	
 	# isolate gof/cutpoints,effect sizes into a separate data table
@@ -47,7 +47,8 @@ bma = function(itsResults) {
 		tmp = data.table(cutpoint=itsResults[[d]]$cutpoint[1], 
 							effect=as.numeric(itsResults[[d]]$effect_size[1,]), 
 							effect_se=as.numeric(itsResults[[d]]$effect_size[4,]), 
-							gof=itsResults[[d]]$gof)
+							bic=itsResults[[d]]$gof$bic, 
+							rmse=itsResults[[d]]$gof$rmse)
 		if (length(itsResults[[d]]$cutpoint)>1) tmp[, cutpoint2:=itsResults[[d]]$cutpoint[2]]
 		stats = rbind(stats, tmp)
 	}
@@ -58,13 +59,16 @@ bma = function(itsResults) {
 	# Average
 	
 	# estimate weights under uniform prior
-	data[, weight:=exp(-.5*(gof-min(gof)))]
-	stats[, weight:=exp(-.5*(gof-min(gof)))]
+	data[, weight:=exp(-.5*(bic-min(bic)))]
+	stats[, weight:=exp(-.5*(bic-min(bic)))]
 	
 	# average predictions
 	meanData = suppressWarnings(data[, lapply(.SD, mean, weight=weight, na.rm=TRUE), by='moyr', 
-				.SDcols=names(data)[!names(data) %in% c('moyr', 'weight', 'gof')]])
-			
+				.SDcols=names(data)[!names(data) %in% c('moyr', 'weight', 'bic', 'rmse')]])
+	
+	# compute RMSE 
+	gof = data.table(rmse=sqrt(mean((meanData[[paste0(outcome, '_pred')]] - meanData[[outcome]])^2)))
+	
 	# estimate prediction standard errors
 	tmpData = meanData[, c('moyr', predVar), with=FALSE]
 	setnames(tmpData, predVar, 'mean')
@@ -92,6 +96,6 @@ bma = function(itsResults) {
 	# Return output
 	return(list('data'=meanData, 'outcome'=outcome, 
 				'cutpoint'=as.Date(c(min(cutpoints), max(cutpoints)), origin='1970-01-01'), 
-				'effect_size'=effect_size, 'stats'=stats, newEffectDate=newEffectDate))
+				'effect_size'=effect_size, 'stats'=stats, newEffectDate=newEffectDate, gof=gof))
 	# -------------------------------------------------------------------------------------------------
 }
