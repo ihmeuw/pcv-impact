@@ -81,6 +81,15 @@ its = function(data=NULL, outcome=NULL, cutpoint=NULL, slope=NULL, newEffectDate
 	# -------------------------------------------------------------------------------------------
 	
 	
+	# ---------------------------------------------------------------------
+	# Forecast exposure for XRCP
+	forecastFit = glm.nb(xrcp_exposure ~ moyr*month(moyr)*year(moyr), data)
+	data[, forecast:=exp(predict(forecastFit, newdata=data))]
+	data[is.na(xrcp_exposure), xrcp_exposure:=forecast]
+	data$forecast = NULL
+	# ---------------------------------------------------------------------
+	
+	
 	# -----------------------------------------------------------------------------------------------
 	# Predict
 	
