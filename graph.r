@@ -88,6 +88,10 @@ graph = function(itsOutput=NULL, quarterly=TRUE) {
 	setnames(graphData, c(outcome, paste0(outcome,'_pred'), paste0(outcome,'_pred_upper'), 
 							paste0(outcome,'_pred_lower'), paste0(outcome,'_pred_cf')), 
 							c('observed', 'trend', 'upper', 'lower', 'cf'))
+	
+	# drop empty lead-in period (for XRCP)
+	first_nonmissing = min(graphData[!is.na(observed) & is.finite(observed)]$moyr)
+	graphData = graphData[moyr>=first_nonmissing]
 	# ----------------------------------------------------------------------------------------------------
 	
 	
