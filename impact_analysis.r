@@ -33,7 +33,7 @@ impactAnalysis = function(cutpoints=as.Date(c('2013-04-01', '2014-01-01')), slop
 	# Assign arguments globally (don't hate)
 	args = c('cutpoints', 'slope', 'new_effect_date', 'bma_dual', 
 			'run_name', 'saveITS', 'saveBMA', 'saveBMADiagnostics',
-			'quarterly', 'rePrepData', 'leadInDate')
+			'quarterly', 'rePrepData', 'leadInDate', 'root')
 	for(arg in args)  assign(arg, get(arg), envir=globalenv())
 	# --------------------------------------------------------------
 	
