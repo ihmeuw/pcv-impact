@@ -62,8 +62,8 @@ impactAnalysis = function(cutpoints=as.Date(c('2013-04-01', '2014-01-01')), slop
 	
 	# root input/output directory on IHME file system
 	j = ifelse(Sys.info()[1]=='Windows', 'J:', '/home/j')
-	if (!is.null(root)) root = paste0(j, '/Project/Evaluation/GAVI/Mozambique/pcv_impact')
-	
+	if (is.null(root)) root = paste0(j, '/Project/Evaluation/GAVI/Mozambique/pcv_impact')
+
 	# automated directory set-up for non-IHME file systems
 	if (!file.exists(root)) { 
 		root = './'
@@ -74,15 +74,15 @@ impactAnalysis = function(cutpoints=as.Date(c('2013-04-01', '2014-01-01')), slop
 	}
 	
 	# prepped data file
-	preppedDataFile = paste0(root, 'data/output/prepped_data.rdata')
+	preppedDataFile = paste0(root, '/data/output/prepped_data.rdata')
 	
 	# output data files
-	itsOutputFile = paste0(root, 'data/output/its_results', run_name, '.rdata')
-	bmaOutputFile = paste0(root, 'data/output/bma_results', run_name, '.rdata')
+	itsOutputFile = paste0(root, '/data/output/its_results', run_name, '.rdata')
+	bmaOutputFile = paste0(root, '/data/output/bma_results', run_name, '.rdata')
 	
 	# graph files
-	itsFile = paste0(root, 'visualizations/its_results', run_name, '.pdf')
-	bmaFile = paste0(root, 'visualizations/bma_results', run_name, '.pdf')
+	itsFile = paste0(root, '/visualizations/its_results', run_name, '.pdf')
+	bmaFile = paste0(root, '/visualizations/bma_results', run_name, '.pdf')
 	
 	# list of outcome variables
 	outcomes = c('ipd_cases', 'ipd_pcv10_serotype_cases', 
