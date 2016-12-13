@@ -74,6 +74,7 @@ prepData = function(dir=NULL, outFile=NULL) {
 	
 	# make alternative outcomes
 	data[, ipd_non_pcv10_serotype_cases:=ipd_cases-ipd_pcv10_serotype_cases]
+	data[, ipd_non_pcv10_serotype_exposure:=ipd_exposure-ipd_pcv10_serotype_exposure]
 	
 	# drop data prior to 2008 according to field team request
 	data = data[moyr>=leadInDate]
