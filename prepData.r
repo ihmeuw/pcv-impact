@@ -65,7 +65,7 @@ prepData = function(dir=NULL, outFile=NULL) {
 	# Prep data
 	
 	# variable names
-	newNames = c('moyr', 'ipd_cases', 'ipd_exposure', 'ipd_pcv10_serotype_cases', 
+	newNames = c('moyr', 'ipd_cases', 'ipd_cases_exposure', 'ipd_pcv10_serotype_cases', 
 						'ipd_pcv10_serotype_exposure', 'xrcp_cases', 'xrcp_exposure')
 	setnames(data, names(data), newNames)
 	
