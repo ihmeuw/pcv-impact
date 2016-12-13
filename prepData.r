@@ -10,13 +10,11 @@
 # * data - all datasets in 'prepped' format (see readme)
 # ---------------------------------------------------------
 
-# to do
-# - more tests on input data (variable names, order etc)
 
 # Define function
 prepData = function(dir=NULL, outFile=NULL) {
 	
-	# ------------------------------------------------------------
+	# ------------------------------------------------------------------------
 	# Handle inputs
 	
 	# test
@@ -28,15 +26,14 @@ prepData = function(dir=NULL, outFile=NULL) {
 	nonvtFile = paste0(dir, '/nonvt_ipd_monthly_rates.xls')
 	xrcpFile = paste0(dir, '/xrcp_monthly_rates.xls')
 	
-	# more tests
-	if (!file.exists(ipdFile)) stop(paste(ipdFile, 'not found'))
-	if (!file.exists(vtFile)) stop(paste(vtFile, 'not found'))
-	if (!file.exists(xrcpFile)) stop(paste(xrcpFile, 'not found'))
-	# ------------------------------------------------------------
+	# test for files
+	files = c('ipdFile', 'vtFile', 'nonvtFile', 'xrcpFile')
+	for(f in files) if (!file.exists(get(f))) stop(paste(get(f), 'not found'))
+	# ------------------------------------------------------------------------
 	
 	
-	# --------------------------------------------------------------------------------------------
-	# Load data
+	# ---------------------------------------------------------------------------------------------------------
+	# Load/test data
 	
 	# load and convert to data tables
 	ipdData = data.table(read_excel(ipdFile))
@@ -44,17 +41,33 @@ prepData = function(dir=NULL, outFile=NULL) {
 	nonvtData = data.table(read_excel(nonvtFile))
 	xrcpData = data.table(read_excel(xrcpFile))
 	
-	# test unique identifiers
-	test = length(unique(ipdData$month))==nrow(ipdData)
-	if (!test) stop('Month does not uniquely identify rows in IPD data')
-	test = length(unique(vtData$month))==nrow(vtData)
-	if (!test) stop('Month does not uniquely identify rows in IPD data')
-	test = length(unique(nonvtData$month))==nrow(nonvtData)
-	if (!test) stop('Month does not uniquely identify rows in non-VT data')
-	test = length(unique(xrcpData$month))==nrow(xrcpData)
-	if (!test) stop('Month does not uniquely identify rows in IPD data')
-	mismatches = xrcpData$Month[!xrcpData$month %in% ipdData$month]
-	if (length(mismatches>0)) stop('There are month-years in XRCP data that aren\'t in IPD data')
+	# run tests
+	dataObjects = c('ipdData', 'vtData', 'nonvtData', 'xrcpData')
+	for (d in dataObjects) { 
+		# test unique identifiers
+		tmp = copy(get(d))
+		test = length(unique(tmp$month))==nrow(tmp)
+		if (!test) stop(paste('Month does not uniquely identify rows in', tmp, 'data'))
+		
+		# test variable names
+		varNames = c('month', 'case', 'tar')
+		if (!all(varNames %in% names(tmp))) stop(paste('Missing variables from', tmp, 'data'))
+
+		# test variable classes
+		classes = c('character','numeric','numeric')
+		if (!all(sapply(tmp, class)==classes)) stop(paste('Incorrect variable classes in', tmp, 'data'))
+		
+		# test variable values
+		if (any(is.na(as.Date(paste0('01', tmp$month), '%d%B%Y')))) stop(paste('Invalid date in', tmp, 'data'))
+		if (max(tmp$case)>300) stop(paste(tmp, 'data has an incidence count that is an order of magnitude too high')) 
+		if (max(tmp$tar)>5000000) stop(paste(tmp, 'data has a TAR that is an order of magnitude too high')) 
+		if (max(tmp$tar)<7000) stop(paste(tmp, 'data has a TAR that is an order of magnitude too low')) 
+	}
+	# ---------------------------------------------------------------------------------------------------------
+	
+	
+	# -----------------------------------------------------------------------------
+	# Prep data
 	
 	# drop XRCP zeroes that represent no surveillance
 	xrcpData = xrcpData[c(1:25, 31:43, 71:106, 119:142)]
@@ -63,11 +76,6 @@ prepData = function(dir=NULL, outFile=NULL) {
 	data = merge(ipdData, vtData, 'month', all=TRUE)
 	data = merge(data, nonvtData, 'month', all=TRUE)
 	data = merge(data, xrcpData, 'month', all=TRUE)
-	# --------------------------------------------------------------------------------------------
-	
-	
-	# -----------------------------------------------------------------------------
-	# Prep data
 	
 	# variable names
 	newNames = c('moyr', 'ipd_cases', 'ipd_exposure', 'ipd_pcv10_serotype_cases', 
