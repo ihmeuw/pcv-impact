@@ -28,9 +28,6 @@ its = function(data=NULL, outcome=NULL, cutpoint=NULL, slope=NULL, newEffectDate
 	# ------------------------------------------------------------------------------
 	# Handle inputs
 	
-	# make sure the input data object doesn't get inadvertently modified
-	data = copy(data)
-	
 	# test
 	for(arg in c('data', 'outcome', 'cutpoint', 'slope')) {
 		if (is.null(get(arg))) stop(paste('Must provide', arg))
