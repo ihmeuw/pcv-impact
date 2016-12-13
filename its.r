@@ -69,10 +69,12 @@ its = function(data=NULL, outcome=NULL, cutpoint=NULL, slope=NULL, newEffectDate
 	data = data[order(moyr)]
 	
 	# store formula
-	if (!slope & C==1) f = as.formula(paste(paste(formulaVars, collapse=' ~ '), '+ postIntervention'))
-	if (slope & C==1) f = as.formula(paste(paste(formulaVars, collapse=' ~ '), '+ daysPostIntervention'))
-	if (!slope & C==2) f = as.formula(paste(paste(formulaVars, collapse=' ~ '), '+ duringIntervention + postIntervention'))
-	if (slope & C==2) f = as.formula(paste(paste(formulaVars, collapse=' ~ '), '+ daysDuringIntervention + daysPostIntervention'))
+	if (!slope & C==1) f = paste(paste(formulaVars, collapse=' ~ '), '+ postIntervention')
+	if (slope & C==1) f = paste(paste(formulaVars, collapse=' ~ '), '+ daysPostIntervention')
+	if (!slope & C==2) f = paste(paste(formulaVars, collapse=' ~ '), '+ duringIntervention + postIntervention')
+	if (slope & C==2) f = paste(paste(formulaVars, collapse=' ~ '), '+ daysDuringIntervention + daysPostIntervention')
+	f = paste0(f, ' + offset(log(', outcome, '_exposure))') # add exposure
+	f = as.formula(f)
 	
 	# run regression
 	fit = suppressWarnings(glm.nb(f, data))
