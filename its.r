@@ -147,7 +147,7 @@ its = function(data=NULL, outcome=NULL, cutpoint=NULL, slope=NULL, newEffectDate
 	}
 	
 	# GoF
-	gof = BIC(fit)
+	gof = data.table(bic=BIC(fit), rmse=sqrt(mean((data[[paste0(outcome,'_pred')]]-data[[outcome]])^2)))
 	# ----------------------------------------------------------------------------------------------------------------
 	
 	
