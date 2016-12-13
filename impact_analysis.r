@@ -186,22 +186,27 @@ impactAnalysis = function(cutpoints=as.Date(c('2013-04-01', '2014-01-01')), slop
 				# graph bma weights, effects and uncertainty
 				tmpData = copy(bmaResults[[o]]$stats)
 				tmpData[, effect:=100-(exp(effect)*100)]
-				setnames(tmpData, c('weight', 'effect', 'effect_se'), c('Model Weight', '% Reduction', 'Effect Standard Error'))
+				tmpData[, effect_se:=exp(effect_se)]
+				facets = c('Model Weight', 'RMSE', '% Reduction', 'Effect Standard Error')
+				setnames(tmpData, c('weight', 'rmse', 'effect', 'effect_se'), facets)
 				idVars = 'cutpoint'
 				if (bma_dual) idVars = c(idVars, 'cutpoint2')
-				tmpData = melt(tmpData, id.vars=idVars, measure.vars=c('Model Weight', '% Reduction', 'Effect Standard Error'))
+				tmpData = melt(tmpData, id.vars=idVars, measure.vars=facets)
 				
 				if (!bma_dual) {
 					p = ggplot(tmpData, aes(y=value, x=cutpoint)) +
-						geom_point() + facet_wrap(~variable, scales='free') +
-						labs(title='BMA Constituent Models', y='Value (Uniform Prior)', x='Cutpoint') + theme_bw()
+						geom_point() + facet_wrap(~variable, scales='free_y') +
+						labs(title=paste('BMA Constituent Models', outcomes[o]), y='Value (Uniform Prior)', x='Cutpoint') + theme_bw()
 				}
 				if (bma_dual) {
 					colors = rep(brewer.pal(11, 'RdYlBu'),4)
 					shapes = rep(c(16,15,17,18),each=11)
+					line = data.table(variable=factor('RMSE', levels=facets), value=bmaResults[[o]]$gof$rmse, 
+										cutpoint=max(tmpData$cutpoint2), cutpoint2=max(tmpData$cutpoint2))
 					p = ggplot(tmpData, aes(y=value, x=cutpoint, color=factor(cutpoint2), shape=factor(cutpoint2))) +
-						geom_point() + facet_wrap(~variable, scales='free') +
-						labs(title='BMA Constituent Models', y='Value (Uniform Prior)', x='Window Start') + 
+						geom_point() + facet_wrap(~variable, scales='free_y') + 
+						geom_hline(data=line, aes(yintercept=value)) + geom_text(data=line, label='BMA', color='black', hjust=1, vjust=1) + 
+						labs(title=paste('BMA Constituent Models', outcomes[o]), y='Value (Uniform Prior)', x='Window Start') + 
 						scale_color_manual('Window End', values=colors) + 
 						scale_shape_manual('Window End', values=shapes) + theme_bw()
 				}
