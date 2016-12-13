@@ -67,10 +67,10 @@ impactAnalysis = function(cutpoints=as.Date(c('2013-04-01', '2014-01-01')), slop
 	# automated directory set-up for non-IHME file systems
 	if (!dir.exists(root)) { 
 		root = './'
-		if (!dir.exists(paste0(root, '/data'))) dir.create((paste0(root, '/data'))
-		if (!dir.exists(paste0(root, '/data/input'))) dir.create((paste0(root, '/data/input'))
-		if (!dir.exists(paste0(root, '/data/output'))) dir.create((paste0(root, '/data/output'))
-		if (!dir.exists(paste0(root, '/visualizations'))) dir.create((paste0(root, '/visualizations'))
+		if (!dir.exists(paste0(root, '/data'))) dir.create(paste0(root, '/data'))
+		if (!dir.exists(paste0(root, '/data/input'))) dir.create(paste0(root, '/data/input'))
+		if (!dir.exists(paste0(root, '/data/output'))) dir.create(paste0(root, '/data/output'))
+		if (!dir.exists(paste0(root, '/visualizations'))) dir.create(paste0(root, '/visualizations'))
 	}
 	
 	# prepped data file
