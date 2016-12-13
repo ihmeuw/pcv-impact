@@ -62,10 +62,10 @@ impactAnalysis = function(cutpoints=as.Date(c('2013-04-01', '2014-01-01')), slop
 	
 	# root input/output directory on IHME file system
 	j = ifelse(Sys.info()[1]=='Windows', 'J:', '/home/j')
-	if (!is.null(root)) root = paste0(j, '/Project/Evaluation/GAVI/Mozambique/pcv_impact/')
+	if (!is.null(root)) root = paste0(j, '/Project/Evaluation/GAVI/Mozambique/pcv_impact')
 	
 	# automated directory set-up for non-IHME file systems
-	if (!dir.exists(root)) { 
+	if (!file.exists(root)) { 
 		root = './'
 		dir.create(paste0(root, '/data'), showWarnings = FALSE)
 		dir.create(paste0(root, '/data/input'), showWarnings = FALSE)
