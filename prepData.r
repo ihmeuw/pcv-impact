@@ -73,13 +73,14 @@ prepData = function(dir=NULL, outFile=NULL) {
 	xrcpData = xrcpData[c(1:25, 31:43, 71:106, 119:142)]
 	
 	# merge IPD, VT, non-VT and XRCP together
-	data = merge(ipdData, vtData, 'month', all=TRUE)
+	data = merge(ipdData, vtData, 'month', all=TRUE, suffixes=c('ipd','vt'))
 	data = merge(data, nonvtData, 'month', all=TRUE)
-	data = merge(data, xrcpData, 'month', all=TRUE)
+	data = merge(data, xrcpData, 'month', all=TRUE, suffixes=c('nonvt','xrcp'))
 	
 	# variable names
 	newNames = c('moyr', 'ipd_cases', 'ipd_exposure', 'ipd_pcv10_serotype_cases', 
-						'ipd_pcv10_serotype_exposure', 'xrcp_cases', 'xrcp_exposure')
+						'ipd_pcv10_serotype_exposure','ipd_non_pcv10_serotype_cases', 
+						'ipd_non_pcv10_serotype_exposure', 'xrcp_cases', 'xrcp_exposure')
 	setnames(data, names(data), newNames)
 	
 	# date format
