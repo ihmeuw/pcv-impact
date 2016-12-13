@@ -25,6 +25,7 @@ prepData = function(dir=NULL, outFile=NULL) {
 	# data files
 	ipdFile = paste0(dir, '/ipd_monthly_rates.xls')
 	vtFile = paste0(dir, '/vt_ipd_monthly_rates.xls')
+	nonvtFile = paste0(dir, '/nonvt_ipd_monthly_rates.xls')
 	xrcpFile = paste0(dir, '/xrcp_monthly_rates.xls')
 	
 	# more tests
@@ -40,6 +41,7 @@ prepData = function(dir=NULL, outFile=NULL) {
 	# load and convert to data tables
 	ipdData = data.table(read_excel(ipdFile))
 	vtData = data.table(read_excel(vtFile))
+	nonvtData = data.table(read_excel(nonvtFile))
 	xrcpData = data.table(read_excel(xrcpFile))
 	
 	# test unique identifiers
@@ -47,6 +49,8 @@ prepData = function(dir=NULL, outFile=NULL) {
 	if (!test) stop('Month does not uniquely identify rows in IPD data')
 	test = length(unique(vtData$month))==nrow(vtData)
 	if (!test) stop('Month does not uniquely identify rows in IPD data')
+	test = length(unique(nonvtData$month))==nrow(nonvtData)
+	if (!test) stop('Month does not uniquely identify rows in non-VT data')
 	test = length(unique(xrcpData$month))==nrow(xrcpData)
 	if (!test) stop('Month does not uniquely identify rows in IPD data')
 	mismatches = xrcpData$Month[!xrcpData$month %in% ipdData$month]
@@ -55,8 +59,9 @@ prepData = function(dir=NULL, outFile=NULL) {
 	# drop XRCP zeroes that represent no surveillance
 	xrcpData = xrcpData[c(1:25, 31:43, 71:106, 119:142)]
 	
-	# merge IPD, VT and XRCP together
+	# merge IPD, VT, non-VT and XRCP together
 	data = merge(ipdData, vtData, 'month', all=TRUE)
+	data = merge(data, nonvtData, 'month', all=TRUE)
 	data = merge(data, xrcpData, 'month', all=TRUE)
 	# --------------------------------------------------------------------------------------------
 	
@@ -71,10 +76,6 @@ prepData = function(dir=NULL, outFile=NULL) {
 	
 	# date format
 	data[, moyr:=as.Date(paste0('01', moyr), '%d%B%Y')]
-	
-	# make alternative outcomes
-	data[, ipd_non_pcv10_serotype_cases:=ipd_cases-ipd_pcv10_serotype_cases]
-	data[, ipd_non_pcv10_serotype_exposure:=ipd_exposure-ipd_pcv10_serotype_exposure]
 	
 	# drop data prior to 2008 according to field team request
 	data = data[moyr>=leadInDate]
