@@ -26,7 +26,7 @@
 impactAnalysis = function(cutpoints=as.Date(c('2013-04-01', '2014-01-01')), slope=TRUE, 
 							new_effect_date=as.Date('2016-06-01'), bma_dual=TRUE, 
 							run_name='', saveITS=FALSE, saveBMA=TRUE, saveBMADiagnostics=FALSE, 
-							quarterly=TRUE, rePrepData=FALSE, leadInDate=as.Date('2008-01-01'),
+							quarterly=FALSE, rePrepData=FALSE, leadInDate=as.Date('2008-01-01'),
 							root=NULL) {
 	
 	# --------------------------------------------------------------
