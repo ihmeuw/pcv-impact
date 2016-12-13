@@ -198,6 +198,7 @@ impactAnalysis = function(cutpoints=as.Date(c('2013-04-01', '2014-01-01')), slop
 						geom_point() + facet_wrap(~variable, scales='free_y') +
 						labs(title=paste('BMA Constituent Models', outcomes[o]), y='Value (Uniform Prior)', x='Cutpoint') + theme_bw()
 				}
+				
 				if (bma_dual) {
 					colors = rep(brewer.pal(11, 'RdYlBu'),4)
 					shapes = rep(c(16,15,17,18),each=11)
